@@ -1,5 +1,4 @@
 from sklearn.metrics import log_loss
-from tools import pickle_dataset
 
 import numpy as np
 
@@ -12,7 +11,7 @@ def _train_model(model, batch_size, train_x, train_y, val_x, val_y):
     current_epoch = 0
 
     while True:
-        model.fit(train_x, train_y, batch_size=batch_size, epochs=1)
+        model.fit(train_x, train_y, batch_size=batch_size, epochs=1, validation_split=0.1)
         y_pred = model.predict(val_x, batch_size=batch_size)
 
         total_loss = 0
