@@ -1,5 +1,5 @@
 from sklearn.metrics import log_loss
-
+from keras.callbacks import EarlyStopping
 import numpy as np
 
 
@@ -44,7 +44,15 @@ def train_folds(X, y, epoch, batch_size, get_model_func):
 
     model = get_model_func()
 
-    hist = model.fit(X, y, batch_size=batch_size, epochs=epoch, validation_split=0.1)
+    callbacks = [
+        EarlyStopping(monitor='val_loss', patience=2, verbose=1, mode='auto')
+    ]
+
+    hist = model.fit(X, y, batch_size=batch_size,
+                     epochs=epoch,
+                     validation_split=0.1,
+                     callbacks=callbacks
+                     )
     # for epoch in range(max_epoch):
     # for fold_id in range(0, fold_count):
     #     fold_start = fold_size * fold_id
