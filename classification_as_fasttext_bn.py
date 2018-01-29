@@ -8,7 +8,7 @@ from keras.preprocessing.text import Tokenizer
 import os
 import argparse
 
-os.environ['CUDA_VISIBLE_DEVICES'] = '5, 6'
+os.environ['CUDA_VISIBLE_DEVICES'] = '4, 5, 6'
 
 
 def main():
@@ -46,7 +46,6 @@ def main():
 
     X_train = sequence.pad_sequences(x_train, maxlen=maxlen)
     X_test = sequence.pad_sequences(x_test, maxlen=maxlen)
-
 
     comment_input = Input(shape=(maxlen, ))
     comment_embedding = Embedding(max_features, embedding_dim, input_length=maxlen)(comment_input)
