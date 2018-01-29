@@ -40,8 +40,6 @@ def train_folds(X, y, epoch, batch_size, get_model_func):
     # fold_size = len(X) // fold_count
     # models = []
 
-    max_epoch = 5
-
     model = get_model_func()
 
     callbacks = [
