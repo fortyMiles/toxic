@@ -15,7 +15,7 @@ def load_from_pickle(func):
         cache_path = 'cache/'
         pickle_name = get_pickled_name(args, kwargs)
         hash_str = hashlib.md5(pickle_name.encode()).hexdigest()
-        pickle_name = os.path.join(cache_path, hash_str)
+        pickle_name = os.path.join(cache_path, hash_str + '.pickle')
 
         if not os.path.exists(cache_path):
             os.mkdir(cache_path)
