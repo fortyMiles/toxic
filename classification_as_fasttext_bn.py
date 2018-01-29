@@ -33,7 +33,7 @@ def main():
     maxlen = 150
     batch_size = 32
     embedding_dim = 64
-    epochs = 4
+    epochs = 10
 
     tok = Tokenizer(num_words=max_features)
     tok.fit_on_texts(list(X_train) + list(X_test))
