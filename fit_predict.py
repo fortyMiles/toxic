@@ -33,7 +33,6 @@ def main():
     parser.add_argument("--dropout-rate", type=float, default=0.3)
     parser.add_argument("--dense-size", type=int, default=32)
     parser.add_argument("--fold-count", type=int, default=10)
-    parser.add_argument("--result-path", type=str, default='./')
 
     args = parser.parse_args()
 
