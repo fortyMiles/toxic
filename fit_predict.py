@@ -3,6 +3,7 @@ from toxic.nltk_utils import tokenize_sentences
 from toxic.train_utils import train_folds
 from toxic.embedding_utils import read_embedding_list, clear_embedding_list, convert_tokens_to_ids
 import pickle
+import os
 
 import argparse
 import numpy as np
@@ -57,6 +58,7 @@ def main():
     words_dict[UNKNOWN_WORD] = len(words_dict)
 
     print("Loading embeddings...")
+
     embedding_list, embedding_word_dict = read_embedding_list(args.embedding_path)
     embedding_size = len(embedding_list[0])
 
