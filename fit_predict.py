@@ -2,14 +2,13 @@ from toxic.model import get_model
 from toxic.nltk_utils import tokenize_sentences
 from toxic.train_utils import train_folds
 from toxic.embedding_utils import read_embedding_list, clear_embedding_list, convert_tokens_to_ids
-import pickle
-import os
 
 import argparse
 import numpy as np
 import os
 import pandas as pd
 
+os.environ['CUDA_VISIBLE_DEVICES'] = '5, 6'
 
 UNKNOWN_WORD = "_UNK_"
 END_WORD = "_END_"
