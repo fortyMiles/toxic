@@ -107,7 +107,7 @@ def main():
     submission.head()
 
     val_acc = np.mean(hist.history['val_acc'])
-    submission.to_csv('submission_bn_fasttext_{}.csv'.format(val_acc), index=False)
+    submission.to_csv('submission_lstm_{}.csv'.format(val_acc), index=False)
 
     # test_predicts_list = []
     # for fold_id, model in enumerate(models):
