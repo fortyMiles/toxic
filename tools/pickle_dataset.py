@@ -11,7 +11,11 @@ def get_pickled_name(args, kwargs):
 def load_from_pickle(func):
     @wraps(func)
     def _wrap(*args, **kwargs):
-        pickle_name = get_pickled_name(args, kwargs)
+        cache_path = 'cache/'
+        pickle_name = os.path.join(cache_path, get_pickled_name(args, kwargs))
+        if not os.path.exists(cache_path):
+            os.mkdir(cache_path)
+
         if os.path.exists(pickle_name):
             with open(pickle_name, 'rb') as f:
                 print('exits pickle file, load pickled data')
