@@ -2,6 +2,7 @@ from toxic.model import get_model
 from toxic.nltk_utils import tokenize_sentences
 from toxic.train_utils import train_folds
 from toxic.embedding_utils import read_embedding_list, clear_embedding_list, convert_tokens_to_ids
+import pickle
 
 import argparse
 import numpy as np
@@ -32,6 +33,7 @@ def main():
     parser.add_argument("--dropout-rate", type=float, default=0.3)
     parser.add_argument("--dense-size", type=int, default=32)
     parser.add_argument("--fold-count", type=int, default=10)
+    parser.add_argument("--result-path", type=str, default='./')
 
     args = parser.parse_args()
 
