@@ -8,7 +8,7 @@ import numpy as np
 import os
 import pandas as pd
 
-os.environ['CUDA_VISIBLE_DEVICES'] = '5, 6'
+os.environ['CUDA_VISIBLE_DEVICES'] = '4'
 
 UNKNOWN_WORD = "_UNK_"
 END_WORD = "_END_"
