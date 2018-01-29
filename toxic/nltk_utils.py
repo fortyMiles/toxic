@@ -1,9 +1,9 @@
 import nltk
 import tqdm
-from tools import pickle_dataset
+from tools.pickle_dataset import load_from_pickle
 
 
-@pickle_dataset
+@load_from_pickle
 def tokenize_sentences(sentences, words_dict):
     tokenized_sentences = []
     for sentence in tqdm.tqdm(sentences):
