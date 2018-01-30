@@ -16,6 +16,7 @@ def main():
 
     parser.add_argument("train_file_path")
     parser.add_argument("test_file_path")
+    parser.add_argument("--embedding-path", type=str, default=None)
 
     args = parser.parse_args()
 
@@ -28,8 +29,13 @@ def main():
     X_train, y_train, X_test = get_train_test(args.train_file_path, args.test_file_path, max_features, maxlen)
 
     comment_input = Input(shape=(maxlen, ))
-    comment_embedding = Embedding(max_features, embedding_dim, input_length=maxlen)(comment_input)
-    comment_embedding = SpatialDropout1D(0.25)(comment_embedding)
+
+    if args.embedding_path:
+        comment_embedding = Embedding(embedding_matrix.shape[0], embedding_matrix.shape[1],
+                                      weights=[embedding_matrix])(comment_input)
+    else:
+        comment_embedding = Embedding(max_features, embedding_dim, input_length=maxlen)(comment_input)
+        comment_embedding = SpatialDropout1D(0.25)(comment_embedding)
     max_emb = GlobalMaxPool1D()(comment_embedding)
     main = BatchNormalization()(max_emb)
     main = Dense(64)(main)
