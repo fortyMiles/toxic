@@ -16,7 +16,7 @@ def get_model(embedding_matrix, sequence_length, dropout_rate, recurrent_units, 
 
     model = Model(inputs=input_layer, outputs=output_layer)
     model.compile(loss='binary_crossentropy',
-                  optimizer=RMSprop(clipvalue=1, clipnorm=1, decay=1e-4),
+                  optimizer=RMSprop(clipvalue=1, clipnorm=5, decay=1e-4),
                   metrics=['accuracy'])
 
     return model
