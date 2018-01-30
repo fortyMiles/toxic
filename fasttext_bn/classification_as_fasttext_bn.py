@@ -7,7 +7,7 @@ from fasttext_bn.model import get_model
 from keras.callbacks import EarlyStopping
 from keras.callbacks import TensorBoard
 
-os.environ['CUDA_VISIBLE_DEVICES'] = '7'
+os.environ['CUDA_VISIBLE_DEVICES'] = ''
 
 
 def main():
