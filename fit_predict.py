@@ -1,7 +1,6 @@
 from toxic.model import get_model
-from toxic.nltk_utils import tokenize_sentences
 from toxic.train_utils import train_folds
-from toxic.embedding_utils import read_embedding_list, clear_embedding_list, convert_tokens_to_ids
+from tools.dataset_untils import get_train_test_and_embedding
 
 import argparse
 import numpy as np
@@ -9,12 +8,6 @@ import os
 import pandas as pd
 
 os.environ['CUDA_VISIBLE_DEVICES'] = '4, 5, 6'
-
-UNKNOWN_WORD = "_UNK_"
-END_WORD = "_END_"
-NAN_WORD = "_NAN_"
-
-CLASSES = ["toxic", "severe_toxic", "obscene", "threat", "insult", "identity_hate"]
 
 PROBABILITIES_NORMALIZE_COEFFICIENT = 1.4
 
@@ -25,7 +18,7 @@ def main():
 
     parser.add_argument("train_file_path")
     parser.add_argument("test_file_path")
-    parser.add_argument("embedding_path")
+    parser.add_argument("--embedding-path", default=None)
     parser.add_argument("--result-path", default="toxic_results")
     parser.add_argument("--batch-size", type=int, default=256)
     parser.add_argument("--sentences-length", type=int, default=500)
@@ -41,49 +34,11 @@ def main():
         raise ValueError("fold-count should be more than 1")
 
     print("Loading data...")
-    train_data = pd.read_csv(args.train_file_path)
-    test_data = pd.read_csv(args.test_file_path)
 
-    list_sentences_train = train_data["comment_text"].fillna(NAN_WORD).values
-    list_sentences_test = test_data["comment_text"].fillna(NAN_WORD).values
-    y_train = train_data[CLASSES].values
-
-    print("Tokenizing sentences in train set...")
-    tokenized_sentences_train, words_dict = tokenize_sentences(list_sentences_train, {})
-
-    print("Tokenizing sentences in test set...")
-    tokenized_sentences_test, words_dict = tokenize_sentences(list_sentences_test, words_dict)
-
-    words_dict[UNKNOWN_WORD] = len(words_dict)
-
-    print("Loading embeddings...")
-
-    embedding_list, embedding_word_dict = read_embedding_list(args.embedding_path)
-    embedding_size = len(embedding_list[0])
-
-    print("Preparing data...")
-    embedding_list, embedding_word_dict = clear_embedding_list(embedding_list, embedding_word_dict, words_dict)
-
-    embedding_word_dict[UNKNOWN_WORD] = len(embedding_word_dict)
-    embedding_list.append([0.] * embedding_size)
-    embedding_word_dict[END_WORD] = len(embedding_word_dict)
-    embedding_list.append([-1.] * embedding_size)
-
-    embedding_matrix = np.array(embedding_list)
-
-    id_to_word = dict((id, word) for word, id in words_dict.items())
-    train_list_of_token_ids = convert_tokens_to_ids(
-        tokenized_sentences_train,
-        id_to_word,
-        embedding_word_dict,
-        args.sentences_length)
-    test_list_of_token_ids = convert_tokens_to_ids(
-        tokenized_sentences_test,
-        id_to_word,
-        embedding_word_dict,
-        args.sentences_length)
-    X_train = np.array(train_list_of_token_ids)
-    X_test = np.array(test_list_of_token_ids)
+    X_train, y_train, X_test, embedding_matrix = get_train_test_and_embedding(args.train_file_path,
+                                                                       args.test_file_path,
+                                                                       args.sentences_length,
+                                                                       args.embedding_path)
 
     get_model_func = lambda: get_model(
         embedding_matrix,

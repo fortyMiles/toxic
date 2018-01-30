@@ -1,11 +1,9 @@
 import pandas as pd
 import numpy as np
-from keras.models import Model, Input
-from keras.layers import Dense, SpatialDropout1D, Dropout
-from keras.layers import Embedding, GlobalMaxPool1D, BatchNormalization
 import os
 import argparse
-from fasttext_bn.initial_train_test_data import get_train_test
+from tools.initial_train_test_data import get_train_test_and_embedding
+from fasttext_bn.model import get_model
 
 os.environ['CUDA_VISIBLE_DEVICES'] = '4, 5, 6'
 
@@ -23,26 +21,21 @@ def main():
     max_features = 50000
     maxlen = 150
     batch_size = 32
-    embedding_dim = 64
     epochs = 10
 
-    X_train, y_train, X_test = get_train_test(args.train_file_path, args.test_file_path, max_features, maxlen)
-
-    comment_input = Input(shape=(maxlen, ))
-
-    if args.embedding_path:
-        comment_embedding = Embedding(embedding_matrix.shape[0], embedding_matrix.shape[1],
-                                      weights=[embedding_matrix])(comment_input)
+    if args.embedding_path is None:
+        embedding_path = None
+        embedding_dim = 64
     else:
-        comment_embedding = Embedding(max_features, embedding_dim, input_length=maxlen)(comment_input)
-        comment_embedding = SpatialDropout1D(0.25)(comment_embedding)
-    max_emb = GlobalMaxPool1D()(comment_embedding)
-    main = BatchNormalization()(max_emb)
-    main = Dense(64)(main)
-    main = Dropout(0.5)(main)
-    output = Dense(6, activation='sigmoid')(main)
-    model = Model(inputs=comment_input, outputs=output)
-    model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
+        embedding_path = args.embedding_path
+        embedding_dim = None
+
+    X_train, y_train, X_test, comment_embedding = get_train_test_and_embedding(
+        args.train_file_path, args.test_file_path, maxlen, max_features, embedding_path, embedding_dim
+    )
+
+    model = get_model(comment_embedding, sequence_length=maxlen, vocab_size=max_features, embedding_dim=embedding_dim)
+
     hist = model.fit(X_train, y_train, batch_size=batch_size, epochs=epochs, validation_split=0.1)
     y_pred = model.predict(X_test)
 
