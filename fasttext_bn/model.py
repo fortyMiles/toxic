@@ -20,6 +20,7 @@ def get_model(embedding_matrix, sequence_length, vocab_size, embedding_dim, drop
     max_emb = GlobalMaxPool1D()(comment_embedding)
     main = BatchNormalization()(max_emb)
     main = Dense(dense_size)(main)
+    main = Dense(dense_size)(main)
     main = Dropout(dropout_rate)(main)
     output = Dense(6, activation='sigmoid')(main)
     model = Model(inputs=comment_input, outputs=output)
