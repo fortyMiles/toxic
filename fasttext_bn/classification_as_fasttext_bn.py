@@ -4,6 +4,7 @@ import os
 import argparse
 from tools.initial_train_test_data import get_train_test_and_embedding
 from fasttext_bn.model import get_model
+from keras.callbacks import EarlyStopping
 
 os.environ['CUDA_VISIBLE_DEVICES'] = '7'
 
@@ -21,7 +22,7 @@ def main():
     max_features = 50000
     maxlen = 150
     batch_size = 32
-    epochs = 10
+    epochs = 100
 
     if args.embedding_path is None:
         embedding_path = None
@@ -36,7 +37,13 @@ def main():
 
     model = get_model(comment_embedding, sequence_length=maxlen, vocab_size=max_features, embedding_dim=embedding_dim)
 
-    hist = model.fit(X_train, y_train, batch_size=batch_size, epochs=epochs, validation_split=0.1)
+    callbacks = [
+        EarlyStopping(monitor='val_loss', patience=5, verbose=1, mode='auto')
+    ]
+
+    hist = model.fit(X_train, y_train, batch_size=batch_size,
+                     epochs=epochs, validation_split=0.1,
+                     callbacks=callbacks)
     y_pred = model.predict(X_test)
 
     submission = pd.read_csv('data/sample_submission.csv')
