@@ -5,7 +5,7 @@ import argparse
 from tools.initial_train_test_data import get_train_test_and_embedding
 from fasttext_bn.model import get_model
 
-os.environ['CUDA_VISIBLE_DEVICES'] = '4, 5, 6'
+os.environ['CUDA_VISIBLE_DEVICES'] = '7'
 
 
 def main():
