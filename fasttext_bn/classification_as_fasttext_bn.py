@@ -5,6 +5,7 @@ import argparse
 from tools.initial_train_test_data import get_train_test_and_embedding
 from fasttext_bn.model import get_model
 from keras.callbacks import EarlyStopping
+from keras.callbacks import TensorBoard
 
 os.environ['CUDA_VISIBLE_DEVICES'] = '7'
 
@@ -38,7 +39,8 @@ def main():
     model = get_model(comment_embedding, sequence_length=maxlen, vocab_size=max_features, embedding_dim=embedding_dim)
 
     callbacks = [
-        EarlyStopping(monitor='val_loss', patience=5, verbose=1, mode='auto')
+        EarlyStopping(monitor='val_loss', patience=5, verbose=1, mode='auto'),
+        TensorBoard(log_dir='./logs', batch_size=batch_size)
     ]
 
     hist = model.fit(X_train, y_train, batch_size=batch_size,
