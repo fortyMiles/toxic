@@ -1,6 +1,6 @@
 from toxic.model import get_model
 from toxic.train_utils import train_folds
-from tools.dataset_untils import get_train_test_and_embedding
+from tools.initial_train_test_data import get_train_test_and_embedding
 
 import argparse
 import numpy as np
