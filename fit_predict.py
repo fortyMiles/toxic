@@ -35,10 +35,13 @@ def main():
 
     print("Loading data...")
 
-    X_train, y_train, X_test, embedding_matrix = get_train_test_and_embedding(args.train_file_path,
-                                                                       args.test_file_path,
-                                                                       args.sentences_length,
-                                                                       args.embedding_path)
+    vocab_size = 50000
+    embedding_dim = 64
+
+    X_train, y_train, X_test, embedding_matrix = get_train_test_and_embedding(
+        train_csv=args.train_file_path, test_csv=args.test_file_path,
+        sequence_length=args.sentences_length, vocab_size=vocab_size,
+        embedding_file=args.embedding_path, embedding_dim=embedding_dim)
 
     get_model_func = lambda: get_model(
         embedding_matrix,
