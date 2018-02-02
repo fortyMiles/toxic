@@ -64,7 +64,7 @@ def main():
 
     submission.head()
 
-    val_acc = np.mean(hist.history['val_acc'])
+    val_acc = hist.history['val_acc'][-1]
     submission.to_csv('submission_lstm_{}.csv'.format(val_acc), index=False)
 
     # test_predicts_list = []
