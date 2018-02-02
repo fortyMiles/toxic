@@ -12,7 +12,7 @@ def get_pickled_name(args, kwargs):
 def load_from_pickle(func):
     @wraps(func)
     def _wrap(*args, **kwargs):
-        cache_path = 'cache/'
+        cache_path = '/data/yuchen/cache/'
         pickle_name = get_pickled_name(args, kwargs)
         hash_str = hashlib.md5(pickle_name.encode()).hexdigest()
         pickle_name = os.path.join(cache_path, hash_str + '.pickle')
