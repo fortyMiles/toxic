@@ -2,6 +2,7 @@ from toxic.model import get_model
 from toxic.train_utils import train_folds
 from tools.initial_train_test_data import get_train_test_and_embedding
 import datetime
+import re
 
 import argparse
 import numpy as np
@@ -33,6 +34,7 @@ def main():
 
     if args.fold_count <= 1:
         raise ValueError("fold-count should be more than 1")
+
 
     print("Loading data...")
 
@@ -69,7 +71,16 @@ def main():
 
     now = datetime.datetime.now().strftime('%Y_%m_%d_%H_%M_%S')
 
-    submission.to_csv('{}_submission_lstm_{}.csv'.format(now, val_acc), index=False)
+    embedding_size = re.findall('[(cbow)|(skip)]-(\d+)-',args.embedding_path)[0]
+    parameters = "emb-{}-batch_size-{}-sen_len-{}-RUNIT-{}-dense_s-{}".format(
+        embedding_size,
+        args.batch_size,
+        args.sentences_length,
+        args.recurrent_units,
+        args.dense_size
+    )
+
+    submission.to_csv('{}_{}_submission_lstm_{}.csv'.format(parameters, now, val_acc), index=False)
 
     # test_predicts_list = []
     # for fold_id, model in enumerate(models):
