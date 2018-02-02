@@ -63,6 +63,7 @@ def main():
         batch_size=args.batch_size,
         get_model_func=get_model_func)
 
+    print('the fold score is : {}'.format(scores))
     validation_scores = np.mean(scores)
 
     if not os.path.exists(args.result_path):
@@ -82,13 +83,16 @@ def main():
         test_predicts_list.append(test_predicts)
         np.save(test_predicts_path, test_predicts)
 
-    test_predicts = np.ones(test_predicts_list[0].shape)
+    test_predicts = np.zeros(shape=test_predicts_list[0].shape)
+    # test_predicts = np.ones(test_predicts_list[0].shape)
     for fold_predict in test_predicts_list:
-        test_predicts *= fold_predict
+        test_predicts += fold_predict
 
-    test_predicts **= (1. / len(test_predicts_list))
-    test_predicts **= PROBABILITIES_NORMALIZE_COEFFICIENT
+    test_predicts /= len(A)
 
+    # test_predicts **= (1. / len(test_predicts_list))
+    # test_predicts **= PROBABILITIES_NORMALIZE_COEFFICIENT
+    #
     test_data = pd.read_csv(args.test_file_path)
 
     test_ids = test_data["id"].values
