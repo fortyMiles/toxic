@@ -57,7 +57,10 @@ def main():
     print("Starting to train models...")
     # model, hist = train_folds(X_train, y_train, args.epoch, args.batch_size, get_model_func)
 
-    models, scores = train_folds(X_train, y_train, args.epoch, args.batch_size, get_model_func)
+    models, scores = train_folds(
+        X=X_train, y=y_train,
+        epoch=args.epoch, fold_count=args.fold_count,
+        batch_size=args.batch_size, get_model_func=get_model_func)
 
     validation_scores = np.mean(scores)
 
