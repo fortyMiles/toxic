@@ -12,13 +12,13 @@ def get_model(embedding_matrix, sequence_length, dropout_rate, recurrent_units, 
     x = Bidirectional(CuDNNGRU(recurrent_units, return_sequences=True))(embedding_layer)
     x = Dropout(dropout_rate)(x)
 
-    # cells = [
-    #     GRUCell(recurrent_units),
-    #     GRUCell(recurrent_units),
-    #     GRUCell(recurrent_units),
-    # ]
-    #
-    # x = RNN(cells)(x)
+    cells = [
+        GRUCell(recurrent_units),
+        GRUCell(recurrent_units),
+        GRUCell(recurrent_units),
+    ]
+
+    x = RNN(cells)(x)
     # x = Bidirectional(CuDNNGRU(recurrent_units, return_sequences=False))(x)
     # x = Dropout(dropout_rate)(x)
     # x = Bidirectional(CuDNNGRU(recurrent_units, return_sequences=False))(x)
