@@ -23,7 +23,7 @@ def main():
     parser.add_argument("--batch-size", type=int, default=256)
     parser.add_argument("--sentences-length", type=int, default=500)
     parser.add_argument("--recurrent-units", type=int, default=64)
-    parser.add_argument("--dropout-rate", type=float, default=0.3)
+    parser.add_argument("--dropout-rate", type=float, default=0.5)
     parser.add_argument("--dense-size", type=int, default=32)
     parser.add_argument("--fold-count", type=int, default=10)
     parser.add_argument('--epoch', type=int, default=5)
