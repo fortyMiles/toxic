@@ -2,7 +2,7 @@ from keras.layers import Dense, Embedding, Input
 from keras.layers import Bidirectional, Dropout, CuDNNGRU
 from keras.models import Model
 from keras.optimizers import RMSprop
-from keras.layers import GRUCell, StackedRNNCells
+from keras.layers import GRUCell, RNN
 
 
 def get_model(embedding_matrix, sequence_length, dropout_rate, recurrent_units, dense_size):
@@ -18,7 +18,7 @@ def get_model(embedding_matrix, sequence_length, dropout_rate, recurrent_units, 
         GRUCell(CuDNNGRU(recurrent_units, return_sequences=False)),
     ]
 
-    x = StackedRNNCells(cells)(x)
+    x = RNN(cells)(x)
     # x = Bidirectional(CuDNNGRU(recurrent_units, return_sequences=False))(x)
     # x = Dropout(dropout_rate)(x)
     # x = Bidirectional(CuDNNGRU(recurrent_units, return_sequences=False))(x)
