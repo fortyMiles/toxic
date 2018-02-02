@@ -16,7 +16,7 @@ def _train_model(model, epoch, batch_size, train_x, train_y, val_x, val_y):
             score = roc_auc_score(val_y[:, j], y_pred[:, j])
             total_score += score
 
-            total_score /= 6.
+        total_score /= 6.
 
         if total_score > best_score:
             best_score = total_score
