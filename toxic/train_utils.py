@@ -1,5 +1,5 @@
 from sklearn.metrics import roc_auc_score
-from sklearn.cross_validation import StratifiedKFold
+from sklearn.model_selection import StratifiedKFold
 
 
 def _train_model(model, epoch, batch_size, train_x, train_y, val_x, val_y):
@@ -33,11 +33,12 @@ def _train_model(model, epoch, batch_size, train_x, train_y, val_x, val_y):
 
 
 def train_folds(X, y, epoch, fold_count, batch_size, get_model_func):
-    skf = StratifiedKFold(y, n_folds=fold_count, shuffle=True)
+    skf = StratifiedKFold(n_splits=fold_count, shuffle=False)
+    # skf = StratifiedKFold(y, n_folds=fold_count, shuffle=False)
 
     models = []
     scores = []
-    for i, (train_indices, test_indices) in enumerate(skf):
+    for i, (train_indices, test_indices) in enumerate(skf.split(X, y)):
         print('Running fold {}/{}'.format(i+1, fold_count))
         model = get_model_func()
 
