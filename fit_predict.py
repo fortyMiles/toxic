@@ -21,6 +21,7 @@ def main():
 
     parser.add_argument("train_file_path")
     parser.add_argument("test_file_path")
+    parser.add_argument('--test-mode', type=bool, default=False)
     parser.add_argument("--embedding-path", default=None)
     parser.add_argument("--result-path", default="toxic_results")
     parser.add_argument("--batch-size", type=int, default=256)
@@ -36,7 +37,6 @@ def main():
     if args.fold_count <= 1:
         raise ValueError("fold-count should be more than 1")
 
-
     print("Loading data...")
 
     vocab_size = 50000
@@ -47,12 +47,27 @@ def main():
         sequence_length=args.sentences_length, vocab_size=vocab_size,
         embedding_file=args.embedding_path, embedding_dim=embedding_dim)
 
+    test_data = pd.read_csv(args.test_file_path)
+    test_ids = test_data["id"].values
+
     get_model_func = lambda: get_model(
         embedding_matrix,
         args.sentences_length,
         args.dropout_rate,
         args.recurrent_units,
         args.dense_size)
+
+    if args.test_mode:
+        X_size = X_train.shape[0]
+        sub_train_indices = np.random.choice(range(X_size), size=int(X_size*0.25), replace=False)
+        X_test_size = X_test.shape[0]
+        sub_test_indices = np.random.choice(range(X_test_size), size=int(X_test_size*0.25), replace=False)
+
+        X_train = X_train[sub_train_indices]
+        y_train = y_train[sub_train_indices]
+
+        X_test = X_test[sub_test_indices]
+        test_ids = test_ids[sub_test_indices]
 
     print("Starting to train models...")
     # model, hist = train_folds(X_train, y_train, args.epoch, args.batch_size, get_model_func)
@@ -88,14 +103,12 @@ def main():
     for fold_predict in test_predicts_list:
         test_predicts += fold_predict
 
-    test_predicts /= len(A)
+    test_predicts /= len(test_predicts_list)
 
     # test_predicts **= (1. / len(test_predicts_list))
     # test_predicts **= PROBABILITIES_NORMALIZE_COEFFICIENT
     #
-    test_data = pd.read_csv(args.test_file_path)
 
-    test_ids = test_data["id"].values
     test_ids = test_ids.reshape((len(test_ids), 1))
 
     test_predicts = pd.DataFrame(data=test_predicts, columns=CLASSES)
