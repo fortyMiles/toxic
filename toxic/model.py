@@ -13,9 +13,9 @@ def get_model(embedding_matrix, sequence_length, dropout_rate, recurrent_units, 
     x = Dropout(dropout_rate)(x)
 
     cells = [
-        GRUCell(CuDNNGRU(recurrent_units, return_sequences=False)),
-        GRUCell(CuDNNGRU(recurrent_units, return_sequences=False)),
-        GRUCell(CuDNNGRU(recurrent_units, return_sequences=False)),
+        Bidirectional(GRUCell(recurrent_units, return_sequences=False)),
+        Bidirectional(GRUCell(recurrent_units, return_sequences=False)),
+        Bidirectional(GRUCell(recurrent_units, return_sequences=False)),
     ]
 
     x = RNN(cells)(x)
