@@ -60,7 +60,8 @@ def main():
     models, scores = train_folds(
         X=X_train, y=y_train,
         epoch=args.epoch, fold_count=args.fold_count,
-        batch_size=args.batch_size, get_model_func=get_model_func)
+        batch_size=args.batch_size,
+        get_model_func=get_model_func)
 
     validation_scores = np.mean(scores)
 

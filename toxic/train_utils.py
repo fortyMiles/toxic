@@ -61,4 +61,4 @@ def train_folds(X, y, epoch, fold_count, batch_size, get_model_func):
         models.append(model)
         scores.append(score)
 
-    return models
+    return models, scores
