@@ -2,6 +2,7 @@ from keras.layers import Dense, Embedding, Input
 from keras.layers import Bidirectional, Dropout, CuDNNGRU
 from keras.models import Model
 from keras.optimizers import RMSprop
+from keras.layers import LSTMCell, RNN
 
 
 def get_model(embedding_matrix, sequence_length, dropout_rate, recurrent_units, dense_size):
@@ -10,7 +11,15 @@ def get_model(embedding_matrix, sequence_length, dropout_rate, recurrent_units, 
                                 weights=[embedding_matrix], trainable=True)(input_layer)
     x = Bidirectional(CuDNNGRU(recurrent_units, return_sequences=True))(embedding_layer)
     x = Dropout(dropout_rate)(x)
-    x = Bidirectional(CuDNNGRU(recurrent_units, return_sequences=True))(x)
+
+    cells = [
+        LSTMCell(recurrent_units),
+        LSTMCell(recurrent_units),
+        LSTMCell(recurrent_units),
+    ]
+
+    x = RNN(cells)(x)
+    # x = Bidirectional(CuDNNGRU(recurrent_units, return_sequences=False))(x)
     # x = Dropout(dropout_rate)(x)
     # x = Bidirectional(CuDNNGRU(recurrent_units, return_sequences=False))(x)
     x = Dense(dense_size, activation="relu")(x)
