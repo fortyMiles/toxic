@@ -7,7 +7,7 @@ import numpy as np
 import os
 import pandas as pd
 
-os.environ['CUDA_VISIBLE_DEVICES'] = '4, 5, 6'
+os.environ['CUDA_VISIBLE_DEVICES'] = '4'
 
 PROBABILITIES_NORMALIZE_COEFFICIENT = 1.4
 
