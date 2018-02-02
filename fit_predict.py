@@ -12,6 +12,7 @@ import pandas as pd
 os.environ['CUDA_VISIBLE_DEVICES'] = '4'
 
 PROBABILITIES_NORMALIZE_COEFFICIENT = 1.4
+CLASSES = ["toxic", "severe_toxic", "obscene", "threat", "insult", "identity_hate"]
 
 
 def main():
@@ -54,20 +55,44 @@ def main():
         args.dense_size)
 
     print("Starting to train models...")
-    model, hist = train_folds(X_train, y_train, args.epoch, args.batch_size, get_model_func)
+    # model, hist = train_folds(X_train, y_train, args.epoch, args.batch_size, get_model_func)
+
+    models, scores = train_folds(X_train, y_train, args.epoch, args.batch_size, get_model_func)
+
+    validation_scores = np.mean(scores)
 
     if not os.path.exists(args.result_path):
         os.mkdir(args.result_path)
 
-    print("Predicting results...")
-    y_pred = model.predict(X_test)
+    # print("Predicting results...")
+    # y_pred = model.predict(X_test)
+    #
 
-    submission = pd.read_csv('data/sample_submission.csv')
-    submission[["toxic", "severe_toxic", "obscene", "threat", "insult", "identity_hate"]] = y_pred / 1.4
+    test_predicts_list = []
+    for fold_id, model in enumerate(models):
+        model_path = os.path.join(args.result_path, "model{0}_weights.npy".format(fold_id))
+        np.save(model_path, model.get_weights())
 
-    submission.head()
+        test_predicts_path = os.path.join(args.result_path, "test_predicts{0}.npy".format(fold_id))
+        test_predicts = model.predict(X_test, batch_size=args.batch_size)
+        test_predicts_list.append(test_predicts)
+        np.save(test_predicts_path, test_predicts)
 
-    val_acc = np.max(hist.history['val_acc'])
+    test_predicts = np.ones(test_predicts_list[0].shape)
+    for fold_predict in test_predicts_list:
+        test_predicts *= fold_predict
+
+    test_predicts **= (1. / len(test_predicts_list))
+    test_predicts **= PROBABILITIES_NORMALIZE_COEFFICIENT
+
+    test_data = pd.read_csv(args.test_file_path)
+
+    test_ids = test_data["id"].values
+    test_ids = test_ids.reshape((len(test_ids), 1))
+
+    test_predicts = pd.DataFrame(data=test_predicts, columns=CLASSES)
+    test_predicts["id"] = test_ids
+    test_predicts = test_predicts[["id"] + CLASSES]
 
     now = datetime.datetime.now().strftime('%Y_%m_%d_%H_%M_%S')
 
@@ -80,33 +105,9 @@ def main():
         args.dense_size
     )
 
-    submission.to_csv('{}_{}_submission_lstm_{}.csv'.format(parameters, now, val_acc), index=False)
+    submit_path = os.path.join(args.result_path, "{}_{}_submission_lstm_{}.csv".format(parameters, now, validation_scores))
+    test_predicts.to_csv(submit_path, index=False)
 
-    # test_predicts_list = []
-    # for fold_id, model in enumerate(models):
-    #     model_path = os.path.join(args.result_path, "model{0}_weights.npy".format(fold_id))
-    #     np.save(model_path, model.get_weights())
-    #
-    #     test_predicts_path = os.path.join(args.result_path, "test_predicts{0}.npy".format(fold_id))
-    #     test_predicts = model.predict(X_test, batch_size=args.batch_size)
-    #     test_predicts_list.append(test_predicts)
-    #     np.save(test_predicts_path, test_predicts)
-    #
-    # test_predicts = np.ones(test_predicts_list[0].shape)
-    # for fold_predict in test_predicts_list:
-    #     test_predicts *= fold_predict
-    #
-    # test_predicts **= (1. / len(test_predicts_list))
-    # test_predicts **= PROBABILITIES_NORMALIZE_COEFFICIENT
-    #
-    # test_ids = test_data["id"].values
-    # test_ids = test_ids.reshape((len(test_ids), 1))
-    #
-    # test_predicts = pd.DataFrame(data=test_predicts, columns=CLASSES)
-    # test_predicts["id"] = test_ids
-    # test_predicts = test_predicts[["id"] + CLASSES]
-    # submit_path = os.path.join(args.result_path, "submit")
-    # test_predicts.to_csv(submit_path, index=False)
 
 if __name__ == "__main__":
     main()
