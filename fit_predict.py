@@ -67,7 +67,7 @@ def main():
 
     submission.head()
 
-    val_acc = hist.history['val_acc'][-1]
+    val_acc = np.max(hist.history['val_acc'])
 
     now = datetime.datetime.now().strftime('%Y_%m_%d_%H_%M_%S')
 
