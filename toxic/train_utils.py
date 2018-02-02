@@ -18,12 +18,12 @@ def _train_model(model, epoch, batch_size, train_x, train_y, val_x, val_y):
 
             total_score /= 6.
 
-            if total_score > best_score:
-                best_score = total_score
-                best_weights = model.get_weights()
-                best_epoch = current_epoch
-            else:
-                if current_epoch - best_epoch == 5:  # early stop
+        if total_score > best_score:
+            best_score = total_score
+            best_weights = model.get_weights()
+            best_epoch = current_epoch
+        else:
+            if current_epoch - best_epoch == 5:  # early stop
                     break
 
         print("Epoch {0} score {1} best_score {2}".format(current_epoch, total_score, best_score))
