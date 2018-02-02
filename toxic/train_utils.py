@@ -43,7 +43,7 @@ def train_folds(X, y, epoch, batch_size, get_model_func):
     model = get_model_func()
 
     callbacks = [
-        EarlyStopping(monitor='val_loss', patience=10, verbose=1, mode='auto'),
+        EarlyStopping(monitor='val_loss', patience=3, verbose=1, mode='auto'),
         TensorBoard(log_dir='./logs', batch_size=batch_size)
     ]
 
