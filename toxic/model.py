@@ -2,7 +2,7 @@ from keras.layers import Dense, Embedding, Input
 from keras.layers import Bidirectional, Dropout, CuDNNGRU
 from keras.models import Model
 from keras.optimizers import RMSprop
-from keras.layers import LSTMCell, RNN
+from keras.layers import CuDNNLSTM as LSTMCell, RNN
 
 
 def get_model(embedding_matrix, sequence_length, dropout_rate, recurrent_units, dense_size):
