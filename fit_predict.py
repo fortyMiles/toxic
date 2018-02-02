@@ -1,6 +1,7 @@
 from toxic.model import get_model
 from toxic.train_utils import train_folds
 from tools.initial_train_test_data import get_train_test_and_embedding
+import datetime
 
 import argparse
 import numpy as np
@@ -65,7 +66,10 @@ def main():
     submission.head()
 
     val_acc = hist.history['val_acc'][-1]
-    submission.to_csv('submission_lstm_{}.csv'.format(val_acc), index=False)
+
+    now = datetime.datetime.now().strftime('%Y_%m_%d_%H_%M_%S')
+
+    submission.to_csv('{}_submission_lstm_{}.csv'.format(now, val_acc), index=False)
 
     # test_predicts_list = []
     # for fold_id, model in enumerate(models):
