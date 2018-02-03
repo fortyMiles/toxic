@@ -61,19 +61,19 @@ def main():
         print('in test mode!')
         X_size = X_train.shape[0]
         sub_train_indices = np.random.choice(range(X_size), size=int(X_size*0.1), replace=False)
-        X_test_size = X_test.shape[0]
-        sub_test_indices = np.random.choice(range(X_test_size), size=int(X_test_size*0.1), replace=False)
+        # X_test_size = X_test.shape[0]
+        # sub_test_indices = np.random.choice(range(X_test_size), size=int(X_test_size*0.1), replace=False)
     else:
         X_size = X_train.shape[0]
         sub_train_indices = np.random.choice(range(X_size), size=int(X_size*1), replace=False)
-        X_test_size = X_test.shape[0]
-        sub_test_indices = np.random.choice(range(X_test_size), size=int(X_test_size*1), replace=False)
+        # X_test_size = X_test.shape[0]
+        # sub_test_indices = np.random.choice(range(X_test_size), size=int(X_test_size*1), replace=False)
 
     X_train = X_train[sub_train_indices]
     y_train = y_train[sub_train_indices]
 
-    X_test = X_test[sub_test_indices]
-    test_ids = test_ids[sub_test_indices]
+    # X_test = X_test[sub_test_indices]
+    # test_ids = test_ids[sub_test_indices]
 
     print("Starting to train models...")
     # model, hist = train_folds(X_train, y_train, args.epoch, args.batch_size, get_model_func)
