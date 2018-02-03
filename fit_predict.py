@@ -58,6 +58,7 @@ def main():
         args.dense_size)
 
     if args.test_mode:
+        print('in test mode!')
         X_size = X_train.shape[0]
         sub_train_indices = np.random.choice(range(X_size), size=int(X_size*0.1), replace=False)
         X_test_size = X_test.shape[0]
