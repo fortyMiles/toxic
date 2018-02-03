@@ -20,12 +20,14 @@ def _train_model(model, epoch, batch_size, train_x, train_y, val_x, val_y):
 
         print("Epoch {0} score {1} best_score {2}".format(current_epoch, total_score, best_score))
 
+        early_stop = 3
+
         if total_score > best_score:
             best_score = total_score
             best_weights = model.get_weights()
             best_epoch = current_epoch
         else:
-            if current_epoch - best_epoch == 5:  # early stop
+            if current_epoch - best_epoch == early_stop:  # early stop
                     break
 
     model.set_weights(best_weights)
