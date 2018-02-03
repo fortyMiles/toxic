@@ -8,6 +8,8 @@ import argparse
 import numpy as np
 import os
 import pandas as pd
+from tools.utilities import softmax
+
 
 os.environ['CUDA_VISIBLE_DEVICES'] = '7'
 
@@ -95,22 +97,26 @@ def main():
     # y_pred = model.predict(X_test)
     #
 
-    test_predicts_list = []
-    for fold_id, model in enumerate(models):
-        model_path = os.path.join(args.result_path, "model{0}_weights.npy".format(fold_id))
-        np.save(model_path, model.get_weights())
+    probabilities = softmax(scores)
 
-        test_predicts_path = os.path.join(args.result_path, "test_predicts{0}.npy".format(fold_id))
-        test_predicts = model.predict(X_test, batch_size=args.batch_size)
-        test_predicts_list.append(test_predicts)
-        np.save(test_predicts_path, test_predicts)
+    # test_predicts_list = []
+    # for fold_id, model in enumerate(models):
+    test_predicts = np.zeros(shape=(X_test.shape[0], CLASSES))
+    for model, prob in zip(models, probabilities):
+        # model_path = os.path.join(args.result_path, "model{0}_weights.npy".format(fold_id))
+        # np.save(model_path, model.get_weights())
 
-    test_predicts = np.zeros(shape=test_predicts_list[0].shape)
+        # test_predicts_path = os.path.join(args.result_path, "test_predicts{0}.npy".format(fold_id))
+        t = model.predict(X_test, batch_size=args.batch_size)
+        test_predicts += prob * t
+        # test_predicts_list.append(test_predicts)
+        # np.save(test_predicts_path, test_predicts)
+
     # test_predicts = np.ones(test_predicts_list[0].shape)
-    for fold_predict in test_predicts_list:
-        test_predicts += fold_predict
+    # for fold_predict in test_predicts_list:
+    #     test_predicts += fold_predict
 
-    test_predicts /= len(test_predicts_list)
+    # test_predicts /= len(test_predicts_list)
 
     # test_predicts **= (1. / len(test_predicts_list))
     # test_predicts **= PROBABILITIES_NORMALIZE_COEFFICIENT
