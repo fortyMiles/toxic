@@ -57,7 +57,7 @@ def main():
         args.recurrent_units,
         args.dense_size)
 
-    if args.test_mode:
+    if args.test_mode is True:
         print('in test mode!')
         X_size = X_train.shape[0]
         sub_train_indices = np.random.choice(range(X_size), size=int(X_size*0.1), replace=False)
