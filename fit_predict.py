@@ -17,7 +17,7 @@ from keras.backend.tensorflow_backend import set_session
 os.environ['CUDA_VISIBLE_DEVICES'] = '7'
 tf_config = tf.ConfigProto()
 tf_config.gpu_options.allow_growth = True
-tf_config.gpu_options.per_process_gpu_memory_fraction = 0.7
+tf_config.gpu_options.per_process_gpu_memory_fraction = 0.9
 set_session(tf.Session(config=tf_config))
 
 PROBABILITIES_NORMALIZE_COEFFICIENT = 1.4
