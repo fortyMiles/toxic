@@ -12,9 +12,13 @@ def _train_model(model, epoch, batch_size, train_x, train_y, val_x, val_y):
         y_pred = model.predict(val_x, batch_size=batch_size)
         total_score = 0
 
+        labels_scores = []
         for j in range(6):
             score = roc_auc_score(val_y[:, j], y_pred[:, j])
             total_score += score
+            labels_scores.append(score)
+
+        print('different labels AUC is : {}'.format(labels_scores))
 
         total_score /= 6.
 
