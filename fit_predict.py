@@ -101,7 +101,7 @@ def main():
 
     # test_predicts_list = []
     # for fold_id, model in enumerate(models):
-    test_predicts = np.zeros(shape=(X_test.shape[0], CLASSES))
+    test_predicts = np.zeros(shape=(X_test.shape[0], len(CLASSES)))
     for model, prob in zip(models, probabilities):
         # model_path = os.path.join(args.result_path, "model{0}_weights.npy".format(fold_id))
         # np.save(model_path, model.get_weights())
