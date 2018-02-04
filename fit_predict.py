@@ -33,6 +33,7 @@ def main():
     parser.add_argument("--dense-size", type=int, default=32)
     parser.add_argument("--fold-count", type=int, default=10)
     parser.add_argument('--epoch', type=int, default=5)
+    parser.add_argument('--load-pretrained', type=bool, default=False)
 
     args = parser.parse_args()
 
@@ -81,11 +82,15 @@ def main():
     print("Starting to train models...")
     # model, hist = train_folds(X_train, y_train, args.epoch, args.batch_size, get_model_func)
 
-    models, scores = train_folds(
-        X=X_train, y=y_train,
-        epoch=args.epoch, fold_count=args.fold_count,
-        batch_size=args.batch_size,
-        get_model_func=get_model_func)
+    if args.load_pretrained is False:
+        models, scores = train_folds(
+            X=X_train, y=y_train,
+            epoch=args.epoch, fold_count=args.fold_count,
+            batch_size=args.batch_size,
+            get_model_func=get_model_func)
+    else:
+        models = [get_model_func() for _ in range(args.fold_count)]
+        scores = [0.98729337078270507, 0.98741052541081709, 0.98875435673905765, 0.98888426426103615, 0.98921313005210798, 0.98900847797211722, 0.98849751432495514, 0.98839252464184923, 0.98844750778401702, 0.98633935039731879]
 
     print('the fold score is : {}'.format(scores))
     validation_scores = np.mean(scores)
@@ -98,13 +103,18 @@ def main():
     #
 
     probabilities = softmax(scores)
-
     # test_predicts_list = []
     # for fold_id, model in enumerate(models):
     test_predicts = np.zeros(shape=(X_test.shape[0], len(CLASSES)))
+    fold_id = 0
     for model, prob in zip(models, probabilities):
-        # model_path = os.path.join(args.result_path, "model{0}_weights.npy".format(fold_id))
-        # np.save(model_path, model.get_weights())
+        model_path = os.path.join(args.result_path, 'model{0}_weights.npy'.format(fold_id))
+
+        if args.load_pretrained is True:
+            weights = np.load('model{0}_weights.npy')
+            model.set_weights(weights)
+        else:
+            np.save(model_path, model.get_weights())
 
         # test_predicts_path = os.path.join(args.result_path, "test_predicts{0}.npy".format(fold_id))
         t = model.predict(X_test, batch_size=args.batch_size)
