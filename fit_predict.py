@@ -10,6 +10,13 @@ import os
 import pandas as pd
 from tools.utilities import softmax
 
+import tensorflow as tf
+from keras.backend.tensorflow_backend import set_session
+# Don't pre-allocate memory; allocate as-needed
+tf_config = tf.ConfigProto()
+tf_config.gpu_options.allow_growth = True
+tf_config.gpu_options.per_process_gpu_memory_fraction = 0.5
+set_session(tf.Session(config=tf_config))
 
 os.environ['CUDA_VISIBLE_DEVICES'] = '7'
 
