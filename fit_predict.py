@@ -71,7 +71,7 @@ def main():
     if args.test_mode is True:
         print('in test mode!')
         X_size = X_train.shape[0]
-        sub_train_indices = np.random.choice(range(X_size), size=int(X_size*0.1), replace=False)
+        sub_train_indices = np.random.choice(range(X_size), size=int(X_size*args.sample), replace=False)
         # X_test_size = X_test.shape[0]
         # sub_test_indices = np.random.choice(range(X_test_size), size=int(X_test_size*0.1), replace=False)
     else:
