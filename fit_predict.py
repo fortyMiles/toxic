@@ -112,7 +112,7 @@ def main():
 
     probabilities = softmax(scores)
     max_probability_index = np.argmax(scores)
-    mean_probabilities = [1/3] * 3
+    mean_probabilities = [1./3] * 3
     # test_predicts_list = []
     # for fold_id, model in enumerate(models):
     test_predicts_softmax = np.zeros(shape=(X_test.shape[0], len(CLASSES)))
@@ -135,7 +135,7 @@ def main():
         # test_predicts_path = os.path.join(args.result_path, "test_predicts{0}.npy".format(fold_id))
         t = model.predict(X_test, batch_size=args.batch_size)
         test_predicts_softmax += prob * t
-        test_predicats_mean += mean_probabilities * t
+        test_predicats_mean += mean_probabilities[fold_id] * t
         if fold_id == max_probability_index:
             test_predicats_max = t
         # test_predicts_list.append(test_predicts)
