@@ -14,7 +14,7 @@ import tensorflow as tf
 from keras.backend.tensorflow_backend import set_session
 # Don't pre-allocate memory; allocate as-needed
 
-os.environ['CUDA_VISIBLE_DEVICES'] = '7'
+os.environ['CUDA_VISIBLE_DEVICES'] = '5, 6, 7'
 tf_config = tf.ConfigProto()
 tf_config.gpu_options.allow_growth = True
 tf_config.gpu_options.per_process_gpu_memory_fraction = 0.9
