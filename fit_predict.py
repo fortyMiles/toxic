@@ -41,6 +41,7 @@ def main():
     parser.add_argument("--fold-count", type=int, default=10)
     parser.add_argument('--epoch', type=int, default=5)
     parser.add_argument('--load-pretrained', type=bool, default=False)
+    parser.add_argument('--sample', type=float, default=0.1)
 
     args = parser.parse_args()
 
@@ -110,14 +111,20 @@ def main():
     #
 
     probabilities = softmax(scores)
+    max_probability_index = np.argmax(scores)
+    mean_probabilities = [1/3] * 3
     # test_predicts_list = []
     # for fold_id, model in enumerate(models):
-    test_predicts = np.zeros(shape=(X_test.shape[0], len(CLASSES)))
+    test_predicts_softmax = np.zeros(shape=(X_test.shape[0], len(CLASSES)))
+    test_predicats_mean = np.zeros(shape=(X_test.shape[0], len(CLASSES)))
+    test_predicats_max = np.zeros(shape=(X_test.shape[0], len(CLASSES)))
+    test_predicats_with_normalizated = np.zeros(shape=(X_test.shape[0], len(CLASSES)))
     fold_id = 0
     print('predicate test set!')
     for model, prob in zip(models, probabilities):
         print('predicate with fold_id {}'.format(fold_id))
         model_path = os.path.join(args.result_path, 'model{0}_weights.npy'.format(fold_id))
+        fold_id += 1
 
         if args.load_pretrained is True:
             weights = np.load('model{0}_weights.npy')
@@ -127,9 +134,14 @@ def main():
 
         # test_predicts_path = os.path.join(args.result_path, "test_predicts{0}.npy".format(fold_id))
         t = model.predict(X_test, batch_size=args.batch_size)
-        test_predicts += prob * t
+        test_predicts_softmax += prob * t
+        test_predicats_mean += mean_probabilities * t
+        if fold_id == max_probability_index:
+            test_predicats_max = t
         # test_predicts_list.append(test_predicts)
         # np.save(test_predicts_path, test_predicts)
+
+    test_predicats_with_normalizated = test_predicts_softmax / PROBABILITIES_NORMALIZE_COEFFICIENT
 
     # test_predicts = np.ones(test_predicts_list[0].shape)
     # for fold_predict in test_predicts_list:
@@ -143,23 +155,32 @@ def main():
 
     test_ids = test_ids.reshape((len(test_ids), 1))
 
-    test_predicts = pd.DataFrame(data=test_predicts, columns=CLASSES)
-    test_predicts["id"] = test_ids
-    test_predicts = test_predicts[["id"] + CLASSES]
+    results_with_label = {
+        'softmax': test_predicts_softmax,
+        'max': test_predicats_max,
+        'mean': test_predicats_mean,
+        'normalized': test_predicats_with_normalizated
+    }
 
-    now = datetime.datetime.now().strftime('%Y_%m_%d_%H_%M_%S')
+    for method in results_with_label:
+        test_predicts = pd.DataFrame(data=results_with_label[method], columns=CLASSES)
+        test_predicts["id"] = test_ids
+        test_predicts = test_predicts[["id"] + CLASSES]
 
-    embedding_size = re.findall('[(cbow)|(skip)]-(\d+)-',args.embedding_path)[0]
-    parameters = "emb-{}-batch_size-{}-sen_len-{}-RUNIT-{}-dense_s-{}".format(
-        embedding_size,
-        args.batch_size,
-        args.sentences_length,
-        args.recurrent_units,
-        args.dense_size
-    )
+        now = datetime.datetime.now().strftime('%Y_%m_%d_%H_%M_%S')
 
-    submit_path = os.path.join(args.result_path, "{}_{}_submission_lstm_{}.csv".format(parameters, now, validation_scores))
-    test_predicts.to_csv(submit_path, index=False)
+        embedding_size = re.findall('[(cbow)|(skip)]-(\d+)-',args.embedding_path)[0]
+        parameters = "{}-emb-{}-batch_size-{}-sen_len-{}-RUNIT-{}-dense_s-{}".format(
+            method,
+            embedding_size,
+            args.batch_size,
+            args.sentences_length,
+            args.recurrent_units,
+            args.dense_size
+        )
+
+        submit_path = os.path.join(args.result_path, "{}_{}_submission_lstm_{}.csv".format(parameters, now, validation_scores))
+        test_predicts.to_csv(submit_path, index=False)
 
 
 if __name__ == "__main__":
