@@ -116,6 +116,7 @@ def main():
     fold_id = 0
     print('predicate test set!')
     for model, prob in zip(models, probabilities):
+        print('predicate with fold_id {}'.format(fold_id))
         model_path = os.path.join(args.result_path, 'model{0}_weights.npy'.format(fold_id))
 
         if args.load_pretrained is True:
