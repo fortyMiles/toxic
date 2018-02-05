@@ -45,8 +45,8 @@ def main():
 
     args = parser.parse_args()
 
-    if args.fold_count <= 1:
-        raise ValueError("fold-count should be more than 1")
+    # if args.fold_count <= 1:
+    #     raise ValueError("fold-count should be more than 1")
 
     print("Loading data...")
 
