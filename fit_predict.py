@@ -120,7 +120,8 @@ def main():
     test_predicats_max = np.zeros(shape=(X_test.shape[0], len(CLASSES)))
     test_predicats_with_normalizated = np.zeros(shape=(X_test.shape[0], len(CLASSES)))
     print('predicate test set!')
-    for fold_id, (model, prob) in zip(models, probabilities):
+    for fold_id, model in zip(models):
+        prob = probabilities[fold_id]
         print('predicate with fold_id {}'.format(fold_id))
         model_path = os.path.join(args.result_path, 'model{0}_weights.npy'.format(fold_id))
 
@@ -130,7 +131,8 @@ def main():
         else:
             np.save(model_path, model.get_weights())
 
-    for fold_id, (model, prob) in zip(models, probabilities):
+    for fold_id, model in zip(models):
+        prob = probabilities[fold_id]
         # test_predicts_path = os.path.join(args.result_path, "test_predicts{0}.npy".format(fold_id))
         t = model.predict(X_test, batch_size=args.batch_size)
         test_predicts_softmax += prob * t
