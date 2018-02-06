@@ -124,7 +124,6 @@ def main():
     for model, prob in zip(models, probabilities):
         print('predicate with fold_id {}'.format(fold_id))
         model_path = os.path.join(args.result_path, 'model{0}_weights.npy'.format(fold_id))
-        fold_id += 1
 
         if args.load_pretrained is True:
             weights = np.load('model{0}_weights.npy')
@@ -140,6 +139,7 @@ def main():
             test_predicats_max = t
         # test_predicts_list.append(test_predicts)
         # np.save(test_predicts_path, test_predicts)
+        fold_id += 1
 
     test_predicats_with_normalizated = test_predicts_softmax / PROBABILITIES_NORMALIZE_COEFFICIENT
 
