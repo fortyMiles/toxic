@@ -112,16 +112,15 @@ def main():
 
     probabilities = softmax(scores)
     max_probability_index = np.argmax(scores)
-    mean_probabilities = [1./3] * 3
+    mean_probabilities = [1./scores] * len(scores)
     # test_predicts_list = []
     # for fold_id, model in enumerate(models):
     test_predicts_softmax = np.zeros(shape=(X_test.shape[0], len(CLASSES)))
     test_predicats_mean = np.zeros(shape=(X_test.shape[0], len(CLASSES)))
     test_predicats_max = np.zeros(shape=(X_test.shape[0], len(CLASSES)))
     test_predicats_with_normalizated = np.zeros(shape=(X_test.shape[0], len(CLASSES)))
-    fold_id = 0
     print('predicate test set!')
-    for model, prob in zip(models, probabilities):
+    for fold_id, (model, prob) in zip(models, probabilities):
         print('predicate with fold_id {}'.format(fold_id))
         model_path = os.path.join(args.result_path, 'model{0}_weights.npy'.format(fold_id))
 
@@ -131,6 +130,7 @@ def main():
         else:
             np.save(model_path, model.get_weights())
 
+    for fold_id, (model, prob) in zip(models, probabilities):
         # test_predicts_path = os.path.join(args.result_path, "test_predicts{0}.npy".format(fold_id))
         t = model.predict(X_test, batch_size=args.batch_size)
         test_predicts_softmax += prob * t
