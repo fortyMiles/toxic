@@ -45,6 +45,9 @@ def train_folds(X, y, epoch, fold_count, batch_size, get_model_func):
     # skf = StratifiedKFold(n_splits=fold_count, shuffle=False)
     # skf = StratifiedKFold(y, n_folds=fold_count, shuffle=False)
 
+    models = []
+    scores = []
+
     if fold_count <= 1:
         shuffled_indices = np.random.choice(range(len(X)), size=len(X), replace=False)
         X = X[shuffled_indices]
@@ -56,31 +59,31 @@ def train_folds(X, y, epoch, fold_count, batch_size, get_model_func):
         train_y = y[:split_index]
         val_x = X[split_index:]
         val_y = y[split_index:]
-        _train_model(model, epoch, batch_size, train_x, train_y, val_x, val_y)
-
-    fold_size = len(X) // fold_count
-
-    models = []
-    scores = []
-    for i in range(fold_count):
-        fold_start = fold_size * i
-        fold_end = fold_size * (i+1)
-
-        if i == fold_count - 1:
-            fold_end = len(X)
-
-        train_x = np.concatenate([X[:fold_start], X[fold_end:]])
-        train_y = np.concatenate([y[:fold_start], y[fold_end:]])
-
-        val_x = X[fold_start:fold_end]
-        val_y = y[fold_start:fold_end]
-
-        print('Running fold {}/{}'.format(i+1, fold_count))
-        model = get_model_func()
-
         model, score = _train_model(model, epoch, batch_size, train_x, train_y, val_x, val_y)
-
         models.append(model)
         scores.append(score)
+    else:
+        fold_size = len(X) // fold_count
+
+        for i in range(fold_count):
+            fold_start = fold_size * i
+            fold_end = fold_size * (i+1)
+
+            if i == fold_count - 1:
+                fold_end = len(X)
+
+            train_x = np.concatenate([X[:fold_start], X[fold_end:]])
+            train_y = np.concatenate([y[:fold_start], y[fold_end:]])
+
+            val_x = X[fold_start:fold_end]
+            val_y = y[fold_start:fold_end]
+
+            print('Running fold {}/{}'.format(i+1, fold_count))
+            model = get_model_func()
+
+            model, score = _train_model(model, epoch, batch_size, train_x, train_y, val_x, val_y)
+
+            models.append(model)
+            scores.append(score)
 
     return models, scores
