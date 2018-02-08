@@ -27,7 +27,7 @@ def roc_auc_score(y_pred, y_true):
         # y_pred = K.cast(y_pred, 'float32')
         mask = K.greater(y_true, 0)
 
-        pos = Lambda(lambda x: x * mask)(y_pred)
+        pos = y_pred[mask]
         neg = Lambda(lambda x: x * ~mask)(y_pred)
 
         pos = K.expand_dims(pos, 0)
