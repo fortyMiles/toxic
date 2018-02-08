@@ -23,8 +23,8 @@ def roc_auc_score(y_pred, y_true):
     # neg = y_pred[~K.cast()]
     with K.name_scope("RocAucScore"):
 
-        pos = Lambda(lambda x: x * K.cast(y_true, tf.bool))(y_pred)
-        neg = Lambda(lambda x: x * ~K.cast(y_true, tf.bool))(y_pred)
+        pos = Lambda(lambda x: x * K.cast(y_true, 'bool'))(y_pred)
+        neg = Lambda(lambda x: x * ~K.cast(y_true, 'bool'))(y_pred)
 
         pos = K.expand_dims(pos, 0)
         neg = K.expand_dims(neg, 1)
