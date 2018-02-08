@@ -2,6 +2,7 @@ import tensorflow as tf
 import numpy as np
 
 from keras import backend as K
+from keras.layers import Lambda
 
 _epsilon = K.epsilon()
 
@@ -22,8 +23,8 @@ def roc_auc_score(y_pred, y_true):
     # neg = y_pred[~K.cast()]
     with K.name_scope("RocAucScore"):
 
-        pos = K.boolean_mask(y_pred, K.cast(y_true, tf.bool))
-        neg = K.boolean_mask(y_pred, ~K.cast(y_true, tf.bool))
+        pos = Lambda(lambda x: x * K.cast(y_true, np.bool_))(y_pred)
+        neg = Lambda(lambda x: x * ~K.cast(y_true, np.bool_))(y_pred)
 
         pos = K.expand_dims(pos, 0)
         neg = K.expand_dims(neg, 1)
@@ -34,6 +35,7 @@ def roc_auc_score(y_pred, y_true):
 
         difference = K.zeros_like(pos * neg) + pos - neg - gamma
 
-        masked = K.boolean_mask(difference, difference < 0.0)
+        masked = Lambda(lambda x: x * (difference < 0.0))(difference)
+        # masked = K.boolean_mask(difference, difference < 0.0)
 
-        return K.reduce_sum(tf.pow(-masked, p))
+        return K.sum(tf.pow(-masked, p))
