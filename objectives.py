@@ -1,3 +1,6 @@
+import tensorflow as tf
+import numpy as np
+
 from keras import backend as K
 
 _epsilon = K.epsilon()
@@ -14,33 +17,22 @@ def roc_auc_score(y_pred, y_true):
         y_pred: `Tensor`. Predicted values.
         y_true: `Tensor` . Targets (labels), a probability distribution.
     """
-    pos = y_true[K.cast(y_true, bool)]
-    neg = y_pred[~K.cast(y_true, bool)]
+    # pos = y_true[K.cast(y_true, bool)]
+    # neg = y_pred[~K.cast()]
+    with tf.name_scope("RocAucScore"):
 
-    pos = K.expand_dims(pos, 0)
-    neg = K.expand_dims(neg, 1)
+        pos = tf.boolean_mask(y_pred, tf.cast(y_true, tf.bool))
+        neg = tf.boolean_mask(y_pred, ~tf.cast(y_true, tf.bool))
 
-    gamma = 0.2
-    p = 3
-
-    difference = K.zeros_like(pos * neg) + pos - neg - gamma
-    masked = difference[difference < 0.0]
-    # with tf.name_scope("RocAucScore"):
-    #
-    #     pos = tf.boolean_mask(y_pred, tf.cast(y_true, tf.bool))
-    #     neg = tf.boolean_mask(y_pred, ~tf.cast(y_true, tf.bool))
-
-        # pos = tf.expand_dims(pos, 0)
-        # neg = tf.expand_dims(neg, 1)
+        pos = tf.expand_dims(pos, 0)
+        neg = tf.expand_dims(neg, 1)
 
         # original paper suggests performance is robust to exact parameter choice
-        # gamma = 0.2
-        # p     = 3
+        gamma = 0.2
+        p     = 3
 
-        # difference = tf.zeros_like(pos * neg) + pos - neg - gamma
+        difference = tf.zeros_like(pos * neg) + pos - neg - gamma
 
-        # masked = tf.boolean_mask(difference, difference < 0.0)
-        #
-        # return tf.reduce_sum(tf.pow(-masked, p))
+        masked = tf.boolean_mask(difference, difference < 0.0)
 
-    return K.sum(K.pow(-masked, p))
+        return tf.reduce_sum(tf.pow(-masked, p))
