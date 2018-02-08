@@ -14,7 +14,7 @@ import tensorflow as tf
 from keras.backend.tensorflow_backend import set_session
 # Don't pre-allocate memory; allocate as-needed
 
-os.environ['CUDA_VISIBLE_DEVICES'] = '0, 1'
+os.environ['CUDA_VISIBLE_DEVICES'] = '7'
 # tf_config = tf.ConfigProto()
 # tf_config.gpu_options.allow_growth = True
 # tf_config.gpu_options.per_process_gpu_memory_fraction = 0.9
@@ -112,7 +112,7 @@ def main():
 
     probabilities = softmax(scores)
     max_probability_index = np.argmax(scores)
-    mean_probabilities = [1./scores] * len(scores)
+    #mean_probabilities = [1./scores] * len(scores)
     # test_predicts_list = []
     # for fold_id, model in enumerate(models):
     test_predicts_softmax = np.zeros(shape=(X_test.shape[0], len(CLASSES)))
@@ -120,7 +120,8 @@ def main():
     test_predicats_max = np.zeros(shape=(X_test.shape[0], len(CLASSES)))
     test_predicats_with_normalizated = np.zeros(shape=(X_test.shape[0], len(CLASSES)))
     print('predicate test set!')
-    for fold_id, (model, prob) in zip(models, probabilities):
+    for fold_id, model in enumerate(models):
+        prob = probabilities[fold_id]
         print('predicate with fold_id {}'.format(fold_id))
         model_path = os.path.join(args.result_path, 'model{0}_weights.npy'.format(fold_id))
 
@@ -130,11 +131,12 @@ def main():
         else:
             np.save(model_path, model.get_weights())
 
-    for fold_id, (model, prob) in zip(models, probabilities):
+    for fold_id, model in enumerate(models):
+        prob = probabilities[fold_id]
         # test_predicts_path = os.path.join(args.result_path, "test_predicts{0}.npy".format(fold_id))
         t = model.predict(X_test, batch_size=args.batch_size)
         test_predicts_softmax += prob * t
-        test_predicats_mean += mean_probabilities[fold_id] * t
+        test_predicats_mean += t * (1/len(models))
         if fold_id == max_probability_index:
             test_predicats_max = t
         # test_predicts_list.append(test_predicts)
