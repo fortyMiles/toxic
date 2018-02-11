@@ -4,6 +4,7 @@ from keras.models import Model
 from keras.optimizers import RMSprop
 from objectives import roc_auc_score
 from keras.layers import GRUCell, RNN, LSTMCell
+from keras.losses import categorical_crossentropy
 
 
 def get_model(embedding_matrix, sequence_length, dropout_rate, recurrent_units, dense_size):
@@ -22,7 +23,7 @@ def get_model(embedding_matrix, sequence_length, dropout_rate, recurrent_units, 
     output_layer = Dense(6, activation="sigmoid")(x)
 
     model = Model(inputs=input_layer, outputs=output_layer)
-    model.compile(loss=roc_auc_score,
+    model.compile(loss=categorical_crossentropy,
                   optimizer=RMSprop(clipvalue=1, clipnorm=1),
                   metrics=['accuracy'])
 
