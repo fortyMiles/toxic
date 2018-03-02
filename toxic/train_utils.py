@@ -53,7 +53,7 @@ def train_folds(X, y, epoch, fold_count, batch_size, get_model_func):
         X = X[shuffled_indices]
         y = y[shuffled_indices]
         model = get_model_func()
-        ratio = 0.9
+        ratio = 0.95
         split_index = int(len(X) * ratio)
         train_x = X[:split_index]
         train_y = y[:split_index]
