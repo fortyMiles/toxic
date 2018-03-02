@@ -102,10 +102,11 @@ epochs = 2
 # X_tra, X_val, y_tra, y_val = train_test_split(x_train, y_train, train_size=0.95, random_state=233)
 # RocAuc = RocAucEvaluation(validation_data=(X_val, y_val), interval=1)
 
-train_folds(x_train, y_train, epochs, fold_count=1, batch_size=batch_size, get_model_func=get_model())
+models, scores = train_folds(x_train, y_train, epochs, fold_count=1, batch_size=batch_size, get_model_func=get_model)
 # hist = model.fit(X_tra, y_tra, batch_size=batch_size, epochs=epochs, validation_data=(X_val, y_val),
 #                  callbacks=[RocAuc], verbose=2)
 
+model = models[0]
 y_pred = model.predict(x_test, batch_size=1024)
 submission[["toxic", "severe_toxic", "obscene", "threat", "insult", "identity_hate"]] = y_pred
 submission.to_csv('submission.csv', index=False)
