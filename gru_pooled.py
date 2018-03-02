@@ -12,6 +12,7 @@ from keras.layers import GRU, Bidirectional, GlobalAveragePooling1D, GlobalMaxPo
 from keras.preprocessing import text, sequence
 from keras.callbacks import Callback
 from toxic.train_utils import train_folds
+from tools.initial_train_test_data import get_train_test_and_embedding
 
 import warnings
 
@@ -24,8 +25,9 @@ os.environ['CUDA_VISIBLE_DEVICES'] = '0'
 
 EMBEDDING_FILE = '/data/yuchen/w2v/fasttext-crawl-300d-2m/crawl-300d-2M.vec'
 
-train = pd.read_csv('data/train.csv')
-test = pd.read_csv('data/test.csv')
+train_path, test_path = 'data/train.csv', 'data/test.csv'
+train = pd.read_csv(train_path)
+test = pd.read_csv(test_path)
 submission = pd.read_csv('data/sample_submission.csv')
 
 X_train = train["comment_text"].fillna("fillna").values
@@ -33,7 +35,7 @@ y_train = train[["toxic", "severe_toxic", "obscene", "threat", "insult", "identi
 X_test = test["comment_text"].fillna("fillna").values
 
 max_features = 30000
-maxlen = 1000
+maxlen = 500
 embed_size = 300
 
 tokenizer = text.Tokenizer(num_words=max_features)
