@@ -12,6 +12,7 @@ from keras.layers import GRU, Bidirectional, GlobalAveragePooling1D, GlobalMaxPo
 from keras.preprocessing import text, sequence
 from keras.callbacks import Callback
 from toxic.train_utils import train_folds
+from tools.initial_train_test_data import get_train_test_and_embedding
 
 import warnings
 
@@ -24,38 +25,46 @@ os.environ['CUDA_VISIBLE_DEVICES'] = '1'
 
 EMBEDDING_FILE = '/data/yuchen/w2v/fasttext-crawl-300d-2m/crawl-300d-2M.vec'
 
-train = pd.read_csv('data/train.csv')
-test = pd.read_csv('data/test.csv')
+train_path = 'data/train.csv'
+test_path = 'data/test.csv'
+train = pd.read_csv(train_path)
+test = pd.read_csv(test_path)
 submission = pd.read_csv('data/sample_submission.csv')
 
-X_train = train["comment_text"].fillna("fillna").values
-y_train = train[["toxic", "severe_toxic", "obscene", "threat", "insult", "identity_hate"]].values
-X_test = test["comment_text"].fillna("fillna").values
+# X_train = train["comment_text"].fillna("fillna").values
+# y_train = train[["toxic", "severe_toxic", "obscene", "threat", "insult", "identity_hate"]].values
+# X_test = test["comment_text"].fillna("fillna").values
 
 max_features = 30000
 maxlen = 100
 embed_size = 300
 
-tokenizer = text.Tokenizer(num_words=max_features)
-tokenizer.fit_on_texts(list(X_train) + list(X_test))
-X_train = tokenizer.texts_to_sequences(X_train)
-X_test = tokenizer.texts_to_sequences(X_test)
-x_train = sequence.pad_sequences(X_train, maxlen=maxlen)
-x_test = sequence.pad_sequences(X_test, maxlen=maxlen)
+# tokenizer = text.Tokenizer(num_words=max_features)
+# tokenizer.fit_on_texts(list(X_train) + list(X_test))
+# X_train = tokenizer.texts_to_sequences(X_train)
+# X_test = tokenizer.texts_to_sequences(X_test)
+# x_train = sequence.pad_sequences(X_train, maxlen=maxlen)
+# x_test = sequence.pad_sequences(X_test, maxlen=maxlen)
 
+embedding_dim = 300
 
-def get_coefs(word, *arr): return word, np.asarray(arr, dtype='float32')
+X_train, y_train, X_test, embedding_matrix = get_train_test_and_embedding(
+    train_csv=train_path, test_csv=test_path,
+    sequence_length=maxlen, vocab_size=max_features,
+    embedding_file=EMBEDDING_FILE, embedding_dim=embedding_dim)
 
+# def get_coefs(word, *arr): return word, np.asarray(arr, dtype='float32')
+#
+#
+# embeddings_index = dict(get_coefs(*o.rstrip().rsplit(' ')) for o in open(EMBEDDING_FILE, encoding='utf-8'))
 
-embeddings_index = dict(get_coefs(*o.rstrip().rsplit(' ')) for o in open(EMBEDDING_FILE, encoding='utf-8'))
-
-word_index = tokenizer.word_index
-nb_words = min(max_features, len(word_index))
-embedding_matrix = np.zeros((nb_words, embed_size))
-for word, i in word_index.items():
-    if i >= max_features: continue
-    embedding_vector = embeddings_index.get(word)
-    if embedding_vector is not None: embedding_matrix[i] = embedding_vector
+# word_index = tokenizer.word_index
+# nb_words = min(max_features, len(word_index))
+# embedding_matrix = np.zeros((nb_words, embed_size))
+# for word, i in word_index.items():
+#     if i >= max_features: continue
+#     embedding_vector = embeddings_index.get(word)
+#     if embedding_vector is not None: embedding_matrix[i] = embedding_vector
 
 
 class RocAucEvaluation(Callback):
@@ -102,11 +111,11 @@ epochs = 2
 # X_tra, X_val, y_tra, y_val = train_test_split(x_train, y_train, train_size=0.95, random_state=233)
 # RocAuc = RocAucEvaluation(validation_data=(X_val, y_val), interval=1)
 
-models, scores = train_folds(x_train, y_train, epochs, fold_count=1, batch_size=batch_size, get_model_func=get_model)
+models, scores = train_folds(X_train, y_train, epochs, fold_count=1, batch_size=batch_size, get_model_func=get_model)
 # hist = model.fit(X_tra, y_tra, batch_size=batch_size, epochs=epochs, validation_data=(X_val, y_val),
 #                  callbacks=[RocAuc], verbose=2)
 
 model = models[0]
-y_pred = model.predict(x_test, batch_size=1024)
+y_pred = model.predict(X_test, batch_size=1024)
 submission[["toxic", "severe_toxic", "obscene", "threat", "insult", "identity_hate"]] = y_pred
 submission.to_csv('submission.csv', index=False)
