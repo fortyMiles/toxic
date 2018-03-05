@@ -65,7 +65,11 @@ print(embedding_matrix.shape)
 for word, i in word_index.items():
     if i >= max_features: continue
     embedding_vector = embeddings_index.get(word)
-    if embedding_vector is not None: embedding_matrix[i] = embedding_vector
+    if embedding_vector is not None:
+        try:
+            embedding_matrix[i] = embedding_vector
+        except IndexError:
+            pass
 
 
 class RocAucEvaluation(Callback):
