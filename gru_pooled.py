@@ -34,7 +34,8 @@ submission = pd.read_csv(submission)
 
 X_train = train["comment_text"].fillna("fillna").values
 
-predicate_fields =["toxic", "severe_toxic", "obscene", "threat", "insult", "identity_hate"]
+# predicate_fields =["toxic", "severe_toxic", "obscene", "threat", "insult", "identity_hate"]
+predicate_fields =["trans", "not_trans"]
 
 y_train = train[predicate_fields].values
 X_test = test["comment_text"].fillna("fillna").values
