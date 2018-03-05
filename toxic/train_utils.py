@@ -13,7 +13,7 @@ def _train_model(model, epoch, batch_size, train_x, train_y, val_x, val_y):
         total_score = 0
 
         labels_scores = []
-        for j in range(6):
+        for j in range(2):
             try:
                 score = roc_auc_score(val_y[:, j], y_pred[:, j])
                 total_score += score
