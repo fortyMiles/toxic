@@ -40,7 +40,7 @@ predicate_fields =["trans", "not_trans"]
 y_train = train[predicate_fields].values
 X_test = test["comment_text"].fillna("fillna").values
 
-max_features = 30000
+max_features = 10000
 maxlen = 10
 embed_size = 200
 
