@@ -35,7 +35,7 @@ y_train = train[["toxic", "severe_toxic", "obscene", "threat", "insult", "identi
 X_test = test["comment_text"].fillna("fillna").values
 
 max_features = 30000
-maxlen = 500
+maxlen = 80
 embed_size = 300
 
 tokenizer = text.Tokenizer(num_words=max_features)
