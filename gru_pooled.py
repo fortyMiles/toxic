@@ -60,6 +60,8 @@ embeddings_index = dict(get_coefs(*o.rstrip().rsplit(' ')) for o in open(EMBEDDI
 word_index = tokenizer.word_index
 nb_words = min(max_features, len(word_index))
 embedding_matrix = np.zeros((nb_words, embed_size))
+print(len(word_index))
+print(embedding_matrix.shape)
 for word, i in word_index.items():
     if i >= max_features: continue
     embedding_vector = embeddings_index.get(word)
