@@ -42,7 +42,7 @@ X_test = test["comment_text"].fillna("fillna").values
 
 max_features = 30000
 maxlen = 10
-embed_size = 300
+embed_size = 200
 
 tokenizer = text.Tokenizer(num_words=max_features)
 tokenizer.fit_on_texts(list(X_train) + list(X_test))
