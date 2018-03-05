@@ -19,9 +19,8 @@ warnings.filterwarnings('ignore')
 
 import os
 
-os.environ['CUDA_VISIBLE_DEVICES'] = '1'
+os.environ['CUDA_VISIBLE_DEVICES'] = ''
 
-TRAIN = True  # if train is False, we will evaluate!
 # os.environ['OMP_NUM_THREADS'] = '4'
 
 # EMBEDDING_FILE = '/data/yuchen/w2v/fasttext-crawl-300d-2m/crawl-300d-2M.vec'
