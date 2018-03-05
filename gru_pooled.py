@@ -20,22 +20,27 @@ warnings.filterwarnings('ignore')
 
 import os
 
-os.environ['CUDA_VISIBLE_DEVICES'] = '0'
+os.environ['CUDA_VISIBLE_DEVICES'] = '1'
 # os.environ['OMP_NUM_THREADS'] = '4'
 
-EMBEDDING_FILE = '/data/yuchen/w2v/fasttext-crawl-300d-2m/crawl-300d-2M.vec'
+# EMBEDDING_FILE = '/data/yuchen/w2v/fasttext-crawl-300d-2m/crawl-300d-2M.vec'
+EMBEDDING_FILE = '/data/yuchen/bank/bank_w2v_model.vec'
+train_path, test_path = '/data/yuchen/bank/train.csv', '/data/yuchen/bank/test.csv'
+submission = '/data/yuchen/bank/sample_submission.csv'
 
-train_path, test_path = 'data/train.csv', 'data/test.csv'
 train = pd.read_csv(train_path)
 test = pd.read_csv(test_path)
-submission = pd.read_csv('data/sample_submission.csv')
+submission = pd.read_csv(submission)
 
 X_train = train["comment_text"].fillna("fillna").values
-y_train = train[["toxic", "severe_toxic", "obscene", "threat", "insult", "identity_hate"]].values
+
+predicate_fields =["toxic", "severe_toxic", "obscene", "threat", "insult", "identity_hate"]
+
+y_train = train[predicate_fields].values
 X_test = test["comment_text"].fillna("fillna").values
 
 max_features = 30000
-maxlen = 80
+maxlen = 10
 embed_size = 300
 
 tokenizer = text.Tokenizer(num_words=max_features)
@@ -110,5 +115,5 @@ models, scores = train_folds(x_train, y_train, epochs, fold_count=1, batch_size=
 
 model = models[0]
 y_pred = model.predict(x_test, batch_size=1024)
-submission[["toxic", "severe_toxic", "obscene", "threat", "insult", "identity_hate"]] = y_pred
-submission.to_csv('submission.csv', index=False)
+submission[predicate_fields] = y_pred
+submission.to_csv('bank_submission.csv', index=False)
