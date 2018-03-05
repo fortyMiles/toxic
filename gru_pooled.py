@@ -3,7 +3,6 @@ import numpy as np
 np.random.seed(42)
 import pandas as pd
 
-from sklearn.model_selection import train_test_split
 from sklearn.metrics import roc_auc_score
 
 from keras.models import Model
@@ -12,7 +11,7 @@ from keras.layers import GRU, Bidirectional, GlobalAveragePooling1D, GlobalMaxPo
 from keras.preprocessing import text, sequence
 from keras.callbacks import Callback
 from toxic.train_utils import train_folds
-from tools.initial_train_test_data import get_train_test_and_embedding
+from tools.pickle_tools import TokenizerSaver
 
 import warnings
 
@@ -21,9 +20,12 @@ warnings.filterwarnings('ignore')
 import os
 
 os.environ['CUDA_VISIBLE_DEVICES'] = '1'
+
+TRAIN = True  # if train is False, we will evaluate!
 # os.environ['OMP_NUM_THREADS'] = '4'
 
 # EMBEDDING_FILE = '/data/yuchen/w2v/fasttext-crawl-300d-2m/crawl-300d-2M.vec'
+
 EMBEDDING_FILE = '/data/yuchen/bank/bank_w2v_model.vec'
 train_path, test_path = '/data/yuchen/bank/train.csv', '/data/yuchen/bank/test.csv'
 submission = '/data/yuchen/bank/sample_submission.csv'
@@ -38,18 +40,21 @@ X_train = train["comment_text"].fillna("fillna").values
 predicate_fields =["trans", "not_trans"]
 
 y_train = train[predicate_fields].values
-X_test = test["comment_text"].fillna("fillna").values
 
 max_features = 10000
 maxlen = 10
 embed_size = 200
 
+X_test = test["comment_text"].fillna("fillna").values
 tokenizer = text.Tokenizer(num_words=max_features)
 tokenizer.fit_on_texts(list(X_train) + list(X_test))
 X_train = tokenizer.texts_to_sequences(X_train)
 X_test = tokenizer.texts_to_sequences(X_test)
 x_train = sequence.pad_sequences(X_train, maxlen=maxlen)
 x_test = sequence.pad_sequences(X_test, maxlen=maxlen)
+
+TokenizerSaver.save(tokenizer)
+print('load tokenizer')
 
 
 def get_coefs(word, *arr): return word, np.asarray(arr, dtype='float32')
@@ -109,7 +114,6 @@ def get_model():
 
 
 model = get_model()
-
 batch_size = 32
 epochs = 15
 
@@ -121,6 +125,9 @@ models, scores = train_folds(x_train, y_train, epochs, fold_count=1, batch_size=
 #                  callbacks=[RocAuc], verbose=2)
 
 model = models[0]
+model.save('model/bank_classification.h5')
+
 y_pred = model.predict(x_test, batch_size=1024)
 submission[predicate_fields] = y_pred
 submission.to_csv('bank_submission.csv', index=False)
+
