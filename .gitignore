@@ -1,1 +1,3 @@
 .idea/*
+model/bank_classification.h5 model/tokenizer.pickle
+model/*
