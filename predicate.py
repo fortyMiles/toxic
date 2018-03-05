@@ -6,6 +6,7 @@ from keras.models import load_model
 jieba.load_userdict('dic.txt')
 
 
+os.environ['CUDA_VISIBLE_DEVICES'] = '1'
 model = load_model('model/bank_classification.h5')
 
 
