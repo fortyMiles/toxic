@@ -1,12 +1,13 @@
 from keras.preprocessing import sequence
 from tools.pickle_tools import TokenizerSaver
 import jieba
+import os
 from keras.models import load_model
 
 jieba.load_userdict('dic.txt')
 
 
-os.environ['CUDA_VISIBLE_DEVICES'] = '1'
+os.environ['CUDA_VISIBLE_DEVICES'] = '5'
 model = load_model('model/bank_classification.h5')
 
 
