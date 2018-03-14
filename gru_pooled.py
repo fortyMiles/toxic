@@ -115,12 +115,14 @@ def get_model():
 
 model = get_model()
 batch_size = 32
-epochs = 15
+epochs = 20
 
 # X_tra, X_val, y_tra, y_val = train_test_split(x_train, y_train, train_size=0.95, random_state=233)
 # RocAuc = RocAucEvaluation(validation_data=(X_val, y_val), interval=1)
 
-models, scores = train_folds(x_train, y_train, epochs, fold_count=1, batch_size=batch_size, get_model_func=get_model)
+models, scores = train_folds(x_train, y_train, epochs,
+                             fold_count=1, batch_size=batch_size,
+                             get_model_func=get_model, evaluation='acc')
 # hist = model.fit(X_tra, y_tra, batch_size=batch_size, epochs=epochs, validation_data=(X_val, y_val),
 #                  callbacks=[RocAuc], verbose=2)
 

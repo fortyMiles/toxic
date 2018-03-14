@@ -1,48 +1,56 @@
 from sklearn.metrics import roc_auc_score
+from keras.callbacks import EarlyStopping
 import numpy as np
 
 
-def _train_model(model, epoch, batch_size, train_x, train_y, val_x, val_y):
-    best_score = -1
-    best_weights = None
-    best_epoch = 0
+def _train_model(model, epoch, batch_size, train_x, train_y, val_x, val_y, evaluation='auc'):
+    if evaluation == 'acc':
+        hist = model.fit(train_x, train_y, batch_size=batch_size, epochs=epoch, validation_data=(val_x, val_y),
+                         callbacks=[
+                             EarlyStopping(patience=5),
+                         ])
+        best_score = hist.history['val_acc'][-1]
+    elif evaluation == 'auc':
+        best_score = -1
+        best_weights = None
+        best_epoch = 0
+        for current_epoch in range(epoch):
+            model.fit(train_x, train_y, batch_size=batch_size, epochs=1)
+            y_pred = model.predict(val_x, batch_size=batch_size)
+            total_score = 0
 
-    for current_epoch in range(epoch):
-        model.fit(train_x, train_y, batch_size=batch_size, epochs=1)
-        y_pred = model.predict(val_x, batch_size=batch_size)
-        total_score = 0
+            labels_scores = []
+            labels_num = 2
+            for j in range(labels_num):
+                try:
+                    score = roc_auc_score(val_y[:, j], y_pred[:, j])
+                    total_score += score
+                    labels_scores.append(score)
+                except ValueError:
+                    continue
 
-        labels_scores = []
-        labels_num = 2
-        for j in range(labels_num):
-            try:
-                score = roc_auc_score(val_y[:, j], y_pred[:, j])
-                total_score += score
-                labels_scores.append(score)
-            except ValueError:
-                continue
+            print('different labels AUC is : {}'.format(labels_scores))
 
-        print('different labels AUC is : {}'.format(labels_scores))
+            total_score /= labels_num
 
-        total_score /= labels_num
+            print("Epoch {0} score {1} best_score {2}".format(current_epoch, total_score, best_score))
 
-        print("Epoch {0} score {1} best_score {2}".format(current_epoch, total_score, best_score))
+            early_stop = 5
 
-        early_stop = 5
+            if total_score > best_score:
+                best_score = total_score
+                best_weights = model.get_weights()
+                best_epoch = current_epoch
+            else:
+                if current_epoch - best_epoch == early_stop:  # early stop
+                        break
 
-        if total_score > best_score:
-            best_score = total_score
-            best_weights = model.get_weights()
-            best_epoch = current_epoch
-        else:
-            if current_epoch - best_epoch == early_stop:  # early stop
-                    break
+        model.set_weights(best_weights)
 
-    model.set_weights(best_weights)
     return model, best_score
 
 
-def train_folds(X, y, epoch, fold_count, batch_size, get_model_func):
+def train_folds(X, y, epoch, fold_count, batch_size, get_model_func, evaluation='auc'):
     # skf = StratifiedKFold(n_splits=fold_count, shuffle=False)
     # skf = StratifiedKFold(y, n_folds=fold_count, shuffle=False)
 
@@ -60,7 +68,7 @@ def train_folds(X, y, epoch, fold_count, batch_size, get_model_func):
         train_y = y[:split_index]
         val_x = X[split_index:]
         val_y = y[split_index:]
-        model, score = _train_model(model, epoch, batch_size, train_x, train_y, val_x, val_y)
+        model, score = _train_model(model, epoch, batch_size, train_x, train_y, val_x, val_y, evaluation=evaluation)
         models.append(model)
         scores.append(score)
     else:
@@ -82,7 +90,7 @@ def train_folds(X, y, epoch, fold_count, batch_size, get_model_func):
             print('Running fold {}/{}'.format(i+1, fold_count))
             model = get_model_func()
 
-            model, score = _train_model(model, epoch, batch_size, train_x, train_y, val_x, val_y)
+            model, score = _train_model(model, epoch, batch_size, train_x, train_y, val_x, val_y, evaluation=evaluation)
 
             models.append(model)
             scores.append(score)
