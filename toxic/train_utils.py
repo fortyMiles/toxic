@@ -13,7 +13,8 @@ def _train_model(model, epoch, batch_size, train_x, train_y, val_x, val_y):
         total_score = 0
 
         labels_scores = []
-        for j in range(2):
+        labels_num = 2
+        for j in range(labels_num):
             try:
                 score = roc_auc_score(val_y[:, j], y_pred[:, j])
                 total_score += score
@@ -23,7 +24,7 @@ def _train_model(model, epoch, batch_size, train_x, train_y, val_x, val_y):
 
         print('different labels AUC is : {}'.format(labels_scores))
 
-        total_score /= 6.
+        total_score /= labels_num
 
         print("Epoch {0} score {1} best_score {2}".format(current_epoch, total_score, best_score))
 

@@ -25,9 +25,10 @@ os.environ['CUDA_VISIBLE_DEVICES'] = ''
 
 # EMBEDDING_FILE = '/data/yuchen/w2v/fasttext-crawl-300d-2m/crawl-300d-2M.vec'
 
-EMBEDDING_FILE = '/data/yuchen/bank/bank_w2v_model.vec'
-train_path, test_path = '/data/yuchen/bank/train.csv', '/data/yuchen/bank/test.csv'
-submission = '/data/yuchen/bank/sample_submission.csv'
+root_path = '/Users/Minchiuan/Workspace/bank'
+EMBEDDING_FILE = '{}/bank_w2v_model.vec'.format(root_path)
+train_path, test_path = '{}/train.csv'.format(root_path), '{}/test.csv'.format(root_path)
+submission = '{}/sample_submission.csv'.format(root_path)
 
 train = pd.read_csv(train_path)
 test = pd.read_csv(test_path)
