@@ -12,6 +12,7 @@ from keras.preprocessing import text, sequence
 from keras.callbacks import Callback
 from toxic.train_utils import train_folds
 from tools.pickle_tools import TokenizerSaver
+import tensorflow as tf
 
 import warnings
 
@@ -107,7 +108,7 @@ def get_model():
 
     model = Model(inputs=inp, outputs=outp)
     model.compile(loss='binary_crossentropy',
-                  optimizer='adam',
+                 optimizer='adam',
                   metrics=['accuracy'])
 
     return model
@@ -127,7 +128,9 @@ models, scores = train_folds(x_train, y_train, epochs,
 #                  callbacks=[RocAuc], verbose=2)
 
 model = models[0]
+graph = tf.get_default_graph()
 model.save('model/bank_classification.h5')
+
 
 y_pred = model.predict(x_test, batch_size=1024)
 submission[predicate_fields] = y_pred
