@@ -1,10 +1,6 @@
 import numpy as np
-
-np.random.seed(42)
 import pandas as pd
-
 from sklearn.metrics import roc_auc_score
-
 from keras.models import Model
 from keras.layers import Input, Dense, Embedding, SpatialDropout1D, concatenate, CuDNNGRU
 from keras.layers import GRU, Bidirectional, GlobalAveragePooling1D, GlobalMaxPooling1D
@@ -13,12 +9,14 @@ from keras.callbacks import Callback
 from toxic.train_utils import train_folds
 from tools.pickle_tools import TokenizerSaver
 import tensorflow as tf
-
+from tools import string_tools
 import warnings
-
-warnings.filterwarnings('ignore')
-
 import os
+import config as C
+import string
+
+np.random.seed(42)
+warnings.filterwarnings('ignore')
 
 os.environ['CUDA_VISIBLE_DEVICES'] = ''
 
@@ -26,46 +24,51 @@ os.environ['CUDA_VISIBLE_DEVICES'] = ''
 
 # EMBEDDING_FILE = '/data/yuchen/w2v/fasttext-crawl-300d-2m/crawl-300d-2M.vec'
 
-root_path = '/Users/Minchiuan/Workspace/bank'
-EMBEDDING_FILE = '{}/bank_w2v_model.vec'.format(root_path)
-train_path, test_path = '{}/train.csv'.format(root_path), '{}/test.csv'.format(root_path)
-submission = '{}/sample_submission.csv'.format(root_path)
+TRAIN_CORPUS = 'train_corpus'
+MODEL = 'model'
 
-train = pd.read_csv(train_path)
-test = pd.read_csv(test_path)
-submission = pd.read_csv(submission)
+EMBEDDING_FILE = C.EMBEDDING_FILE
+TRAIN_PATH = C.TRAIN_PATH
+# ROOT_PATH = '/Users/kouminquan/Workspaces/IBM/dataset'
+# test_path = '{}/bank_test.csv'.format(root_path)
+# submission = '{}/submission.csv'.format(root_path)
 
-X_train = train["comment_text"].fillna("fillna").values
+PREDICATE_FIELDS = C.Y
+
+train = pd.read_csv(TRAIN_PATH)
+# test = pd.read_csv(test_path)
+# submission = pd.read_csv(submission)
+
+X_train = train[C.X].fillna(string.whitespace).values
+X_train = [string_tools.filter_unimportant(x) for x in X_train]
 
 # predicate_fields =["toxic", "severe_toxic", "obscene", "threat", "insult", "identity_hate"]
-predicate_fields =["trans", "not_trans"]
 
-y_train = train[predicate_fields].values
+y_train = train[PREDICATE_FIELDS].values
 
-max_features = 10000
-maxlen = 10
-embed_size = 200
+max_features = 9659
 
-X_test = test["comment_text"].fillna("fillna").values
+# X_test = test["comment_text"].fillna("fillna").values
 tokenizer = text.Tokenizer(num_words=max_features)
-tokenizer.fit_on_texts(list(X_train) + list(X_test))
+# tokenizer.fit_on_texts(list(X_train) + list(X_test))
+tokenizer.fit_on_texts(list(X_train))
 X_train = tokenizer.texts_to_sequences(X_train)
-X_test = tokenizer.texts_to_sequences(X_test)
-x_train = sequence.pad_sequences(X_train, maxlen=maxlen)
-x_test = sequence.pad_sequences(X_test, maxlen=maxlen)
+# X_test = tokenizer.texts_to_sequences(X_test)
+x_train = sequence.pad_sequences(X_train, maxlen=C.MAX_LEN)
+# x_test = sequence.pad_sequences(X_test, maxlen=maxlen)
 
-TokenizerSaver.save(tokenizer)
-print('load tokenizer')
+TokenizerSaver.save(tokenizer, C.TOKENIZER_NAME)
+print('load tokenizer finish')
 
 
-def get_coefs(word, *arr): return word, np.asarray(arr, dtype='float32')
+def get_coefs(word, *arr): return word, np.asarray(arr, dtype=np.float32)
 
 
 embeddings_index = dict(get_coefs(*o.rstrip().rsplit(' ')) for o in open(EMBEDDING_FILE, encoding='utf-8'))
 
 word_index = tokenizer.word_index
 nb_words = min(max_features, len(word_index))
-embedding_matrix = np.zeros((nb_words, embed_size))
+embedding_matrix = np.zeros((nb_words, C.EMBED_SIZE))
 print(len(word_index))
 print(embedding_matrix.shape)
 for word, i in word_index.items():
@@ -97,18 +100,18 @@ class RocAucEvaluation(Callback):
 
 
 def get_model():
-    inp = Input(shape=(maxlen,))
-    x = Embedding(max_features, embed_size, weights=[embedding_matrix])(inp)
+    inp = Input(shape=(C.MAX_LEN,))
+    x = Embedding(max_features, C.EMBED_SIZE, weights=[embedding_matrix])(inp)
     x = SpatialDropout1D(0.2)(x)
     x = Bidirectional(GRU(80, return_sequences=True))(x)
     avg_pool = GlobalAveragePooling1D()(x)
     max_pool = GlobalMaxPooling1D()(x)
     conc = concatenate([avg_pool, max_pool])
-    outp = Dense(2, activation="sigmoid")(conc)
+    outp = Dense(len(PREDICATE_FIELDS), activation="sigmoid")(conc)
 
     model = Model(inputs=inp, outputs=outp)
     model.compile(loss='binary_crossentropy',
-                 optimizer='adam',
+                  optimizer='adam',
                   metrics=['accuracy'])
 
     return model
@@ -123,16 +126,16 @@ epochs = 20
 
 models, scores = train_folds(x_train, y_train, epochs,
                              fold_count=1, batch_size=batch_size,
-                             get_model_func=get_model, evaluation='acc')
+                             get_model_func=get_model, evaluation='auc')
 # hist = model.fit(X_tra, y_tra, batch_size=batch_size, epochs=epochs, validation_data=(X_val, y_val),
 #                  callbacks=[RocAuc], verbose=2)
 
 model = models[0]
 graph = tf.get_default_graph()
-model.save('model/bank_classification.h5')
+model.save(C.MODEL_NAME)
 
 
-y_pred = model.predict(x_test, batch_size=1024)
-submission[predicate_fields] = y_pred
-submission.to_csv('bank_submission.csv', index=False)
+# y_pred = model.predict(x_test, batch_size=1024)
+# submission[predicate_fields] = y_pred
+# submission.to_csv('bank_submission.csv', index=False)
 

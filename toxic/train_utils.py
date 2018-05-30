@@ -1,5 +1,6 @@
 from sklearn.metrics import roc_auc_score
 from keras.callbacks import EarlyStopping
+import config as C
 import numpy as np
 
 
@@ -7,7 +8,7 @@ def _train_model(model, epoch, batch_size, train_x, train_y, val_x, val_y, evalu
     if evaluation == 'acc':
         hist = model.fit(train_x, train_y, batch_size=batch_size, epochs=epoch, validation_data=(val_x, val_y),
                          callbacks=[
-                             EarlyStopping(patience=5),
+                             EarlyStopping(patience=3),
                          ])
         best_score = hist.history['val_acc'][-1]
     elif evaluation == 'auc':
@@ -20,7 +21,7 @@ def _train_model(model, epoch, batch_size, train_x, train_y, val_x, val_y, evalu
             total_score = 0
 
             labels_scores = []
-            labels_num = 2
+            labels_num = len(C.Y)
             for j in range(labels_num):
                 try:
                     score = roc_auc_score(val_y[:, j], y_pred[:, j])
@@ -35,7 +36,7 @@ def _train_model(model, epoch, batch_size, train_x, train_y, val_x, val_y, evalu
 
             print("Epoch {0} score {1} best_score {2}".format(current_epoch, total_score, best_score))
 
-            early_stop = 5
+            early_stop = 3
 
             if total_score > best_score:
                 best_score = total_score
