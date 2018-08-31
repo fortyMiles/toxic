@@ -14,6 +14,7 @@ import warnings
 import os
 import config as C
 import string
+import logging
 
 np.random.seed(42)
 warnings.filterwarnings('ignore')
@@ -39,8 +40,10 @@ train = pd.read_csv(TRAIN_PATH)
 # test = pd.read_csv(test_path)
 # submission = pd.read_csv(submission)
 
+logging.info('read csv finished!')
+
 X_train = train[C.X].fillna(string.whitespace).values
-X_train = [string_tools.filter_unimportant(x) for x in X_train]
+# X_train = [string_tools.filter_unimportant(x) for x in X_train]
 
 # predicate_fields =["toxic", "severe_toxic", "obscene", "threat", "insult", "identity_hate"]
 
@@ -49,6 +52,8 @@ y_train = train[PREDICATE_FIELDS].values
 max_features = 9659
 
 # X_test = test["comment_text"].fillna("fillna").values
+logging.info('begin tokenizer')
+
 tokenizer = text.Tokenizer(num_words=max_features)
 # tokenizer.fit_on_texts(list(X_train) + list(X_test))
 tokenizer.fit_on_texts(list(X_train))
@@ -63,6 +68,8 @@ print('load tokenizer finish')
 
 def get_coefs(word, *arr): return word, np.asarray(arr, dtype=np.float32)
 
+
+logging.info('begin read word2vec')
 
 embeddings_index = dict(get_coefs(*o.rstrip().rsplit(' ')) for o in open(EMBEDDING_FILE, encoding='utf-8'))
 
@@ -79,6 +86,8 @@ for word, i in word_index.items():
             embedding_matrix[i] = embedding_vector
         except IndexError:
             pass
+
+logging.info('end read word2vec')
 
 
 class RocAucEvaluation(Callback):
