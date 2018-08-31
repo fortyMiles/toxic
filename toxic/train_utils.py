@@ -20,7 +20,7 @@ def _train_model(model, epoch, batch_size, train_x, train_y, val_x, val_y, evalu
             model.fit(train_x, train_y, batch_size=batch_size, epochs=1)
             y_pred = model.predict(val_x, batch_size=batch_size)
 
-            f1 = np.mean([f1_score(val_y[:, j], y_pred[:, j]) for j in range(C.Y)])
+            f1 = np.mean([f1_score(val_y[:, j], y_pred[:, j]) for j in range(len(C.Y))])
 
             print('F1 score is : {}'.format(f1))
 

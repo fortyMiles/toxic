@@ -127,7 +127,7 @@ def get_model():
 
 
 model = get_model()
-batch_size = 32
+batch_size = 1024
 epochs = 20
 early_stop = 5
 
