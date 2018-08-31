@@ -31,4 +31,5 @@ def evalution(predicate_csv_content, true_csv_content, labeld_columns):
 
 validation_predicate = test_model(test_path=validation_csv_fpath)
 
-print('validation result is f1-score: {}'.format(evalution(validation_predicate, validation_original)))
+result_f1_score = evalution(validation_predicate, validation_original, label_columns)
+print('validation result is f1-score: {}'.format(result_f1_score))
