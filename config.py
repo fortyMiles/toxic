@@ -13,8 +13,8 @@ Y = "location_traffic_convenience_unrelated location_traffic_convenience_positiv
     "environment_space_neg environment_cleaness_unrelated environment_cleaness_positive environment_cleaness_neutral environment_cleaness_neg dish_portion_unrelated dish_portion_positive dish_portion_neutral dish_portion_neg dish_taste_unrelated dish_taste_positive dish_taste_neutral dish_taste_neg dish_look_unrelated dish_look_positive dish_look_neutral dish_look_neg dish_recommendation_unrelated dish_recommendation_positive dish_recommendation_neutral dish_recommendation_neg others_overall_experience_unrelated others_overall_experience_positive others_overall_experience_neutral others_overall_experience_neg others_willing_to_consume_again_unrelated others_willing_to_consume_again_positive others_willing_to_consume_again_neutral others_willing_to_consume_again_neg".split()
 
 X = 'comment'
-MAX_LEN = 50
+MAX_LEN = 200
 EMBED_SIZE = 100
 
-TOKENIZER_NAME = 'model/tokenizer-0831.tk'
-MODEL_NAME = 'model/rating_classification_2018_0831.h5'
+TOKENIZER_NAME = 'model/tokenizer-0831-2.tk'
+MODEL_NAME = 'model/rating_classification_2018_0831-2.h5'

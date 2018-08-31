@@ -49,7 +49,7 @@ X_train = train[C.X].fillna(string.whitespace).values
 
 y_train = train[PREDICATE_FIELDS].values
 
-max_features = 9659
+max_features = 50000
 
 # X_test = test["comment_text"].fillna("fillna").values
 logging.info('begin tokenizer')
@@ -129,13 +129,14 @@ def get_model():
 model = get_model()
 batch_size = 32
 epochs = 20
+early_stop = 5
 
 # X_tra, X_val, y_tra, y_val = train_test_split(x_train, y_train, train_size=0.95, random_state=233)
 # RocAuc = RocAucEvaluation(validation_data=(X_val, y_val), interval=1)
 
 models, scores = train_folds(x_train, y_train, epochs,
                              fold_count=1, batch_size=batch_size,
-                             get_model_func=get_model, evaluation='auc')
+                             get_model_func=get_model, evaluation='auc', early_stop=early_stop)
 # hist = model.fit(X_tra, y_tra, batch_size=batch_size, epochs=epochs, validation_data=(X_val, y_val),
 #                  callbacks=[RocAuc], verbose=2)
 
