@@ -2,6 +2,7 @@ from sklearn.metrics import roc_auc_score
 from keras.callbacks import EarlyStopping
 import config as C
 import numpy as np
+from sklearn.metrics import f1_score
 
 
 def _train_model(model, epoch, batch_size, train_x, train_y, val_x, val_y, evaluation='auc', early_stop=5):
@@ -11,6 +12,29 @@ def _train_model(model, epoch, batch_size, train_x, train_y, val_x, val_y, evalu
                              EarlyStopping(patience=early_stop),
                          ])
         best_score = hist.history['val_acc'][-1]
+    elif evaluation == 'f1':
+        best_score = -1
+        best_weights = None
+        best_epoch = 0
+        for current_epoch in range(epoch):
+            model.fit(train_x, train_y, batch_size=batch_size, epochs=1)
+            y_pred = model.predict(val_x, batch_size=batch_size)
+
+            f1 = np.mean([f1_score(val_y[:, j], y_pred[:, j]) for j in range(C.Y)])
+
+            print('F1 score is : {}'.format(f1))
+
+            print("Epoch {0} score {1} best_score {2}".format(current_epoch, f1, best_score))
+
+            if f1 > best_score:
+                best_score = f1
+                best_weights = model.get_weights()
+                best_epoch = current_epoch
+            else:
+                if current_epoch - best_epoch == early_stop:  # early stop
+                    break
+
+        model.set_weights(best_weights)
     elif evaluation == 'auc':
         best_score = -1
         best_weights = None

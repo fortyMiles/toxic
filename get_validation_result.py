@@ -30,11 +30,18 @@ def evalution(predicate_csv_content, true_csv_content, labeld_columns):
     return np.mean([f1_score(predicate_csv_content[c], true_csv_content[c]) for c in labeld_columns])
 
 
-validation_predicate = change_n_categorical_to_n_binary_categorical(
-    convert_continuos_to_2_categorical(
-        test_model(test_path=validation_csv_fpath)
+def get_validation_set_f1_score(model=None):
+    validation_predicate = change_n_categorical_to_n_binary_categorical(
+        convert_continuos_to_2_categorical(
+            test_model(test_path=validation_csv_fpath)
+        )
     )
-)
 
-result_f1_score = evalution(validation_predicate, validation_original, label_columns)
-print('validation result is f1-score: {}'.format(result_f1_score))
+    result_f1_score = evalution(validation_predicate, validation_original, label_columns)
+
+    return result_f1_score
+
+
+if __name__ == '__main__':
+    result_f1 = get_validation_set_f1_score()
+    print('validation result is f1-score: {}'.format(result_f1))

@@ -136,7 +136,7 @@ early_stop = 5
 
 models, scores = train_folds(x_train, y_train, epochs,
                              fold_count=1, batch_size=batch_size,
-                             get_model_func=get_model, evaluation='auc', early_stop=early_stop)
+                             get_model_func=get_model, evaluation='f1', early_stop=early_stop)
 # hist = model.fit(X_tra, y_tra, batch_size=batch_size, epochs=epochs, validation_data=(X_val, y_val),
 #                  callbacks=[RocAuc], verbose=2)
 

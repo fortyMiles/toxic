@@ -19,13 +19,16 @@ import os
 import time
 
 
-def test_model(model_path=None, token_name=None, test_path=None, max_len=None, save=True):
-    model_path = model_path or C.MODEL_NAME
-    token_name = token_name or C.TOKENIZER_NAME
-    test_path = test_path or C.TEST_PATH
-    max_len = max_len or C.MAX_LEN
+def test_model(model=None, model_path=None, token_name=None, test_path=None, max_len=None, save=True):
+    if model is None:
+        model_path = model_path or C.MODEL_NAME
+        token_name = token_name or C.TOKENIZER_NAME
+        test_path = test_path or C.TEST_PATH
+        max_len = max_len or C.MAX_LEN
 
-    model = load_model(model_path)
+        model = load_model(model_path)
+    else:
+        model = model  # model assigned to argument model
 
     tokenizer = TokenizerSaver.load(token_name)
     tokenizer.oov_token = None
