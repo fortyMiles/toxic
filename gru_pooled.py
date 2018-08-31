@@ -49,7 +49,7 @@ X_train = train[C.X].fillna(string.whitespace).values
 
 y_train = train[PREDICATE_FIELDS].values
 
-max_features = 100000
+max_features = 200000
 
 # X_test = test["comment_text"].fillna("fillna").values
 logging.info('begin tokenizer')
@@ -112,7 +112,7 @@ def get_model():
     inp = Input(shape=(C.MAX_LEN,))
     x = Embedding(max_features, C.EMBED_SIZE, weights=[embedding_matrix])(inp)
     x = SpatialDropout1D(0.2)(x)
-    x = Bidirectional(CuDNNGRU(160, return_sequences=True))(x)
+    x = Bidirectional(CuDNNGRU(320, return_sequences=True))(x)
     avg_pool = GlobalAveragePooling1D()(x)
     max_pool = GlobalMaxPooling1D()(x)
     conc = concatenate([avg_pool, max_pool])
