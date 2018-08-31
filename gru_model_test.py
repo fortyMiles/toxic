@@ -31,8 +31,8 @@ X_test = test[C.X].fillna("fillna").values
 X_test = tokenizer.texts_to_sequences(X_test)
 x_test = sequence.pad_sequences(X_test, maxlen=C.MAX_LEN)
 y_pred = model.predict(x_test, batch_size=1024)
-x_test[C.Y] = y_pred
+test[C.Y] = y_pred
 
 result_dir = 'result'
-x_test.to_csv(os.path.join(result_dir, 'result_{}.csv'.format(time.time())), index=False)
+test.to_csv(os.path.join(result_dir, 'result_{}.csv'.format(time.time())), index=False)
 print('predicate finished!')
