@@ -19,18 +19,12 @@ import config as C
 import os
 import time
 
-path = 'model'
-
-model = load_model(os.path.join(path, C.MODEL_NAME.format(path)))
-
-# feature_size = 50
-# x = np.array([[0]*feature_size])
-# model.predict(x)
+model = load_model(C.MODEL_NAME)
 
 tokenizer = TokenizerSaver.load()
 tokenizer.oov_token = None
 
-test_path = C.TEST_FILE
+test_path = C.TEST_PATH
 test = pd.read_csv(test_path)
 
 X_test = test[C.X].fillna("fillna").values

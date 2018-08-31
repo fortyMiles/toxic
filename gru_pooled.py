@@ -19,7 +19,7 @@ import logging
 np.random.seed(42)
 warnings.filterwarnings('ignore')
 
-os.environ['CUDA_VISIBLE_DEVICES'] = '0, 1'
+os.environ['CUDA_VISIBLE_DEVICES'] = '1'
 
 # os.environ['OMP_NUM_THREADS'] = '4'
 
