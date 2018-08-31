@@ -1,6 +1,6 @@
-__root_path = '/Users/kouminquan/Workspaces/IBM/dataset'
-EMBEDDING_FILE = "{}/bank_w2v_model.vec".format(__root_path)
-TRAIN_PATH = "{}/bank_train.csv".format(__root_path)
+__root_path = '/home/itaas/AI-Lab'
+EMBEDDING_FILE = "{}/dianping_w2v_kv.vec".format(__root_path)
+TRAIN_PATH = "{}/rating_train.csv".format(__root_path)
 
 Y = "location_traffic_convenience_unrelated location_traffic_convenience_positive location_traffic_convenience_neutral location_traffic_convenience_neg location_distance_from_business_district_unrelated " \
     "location_distance_from_business_district_positive location_distance_from_business_district_neutral location_distance_from_business_district_neg " \
@@ -10,9 +10,10 @@ Y = "location_traffic_convenience_unrelated location_traffic_convenience_positiv
     "price_discount_unrelated price_discount_positive price_discount_neutral price_discount_neg environment_decoration_unrelated environment_decoration_positive environment_decoration_neutral " \
     "environment_decoration_neg environment_noise_unrelated environment_noise_positive environment_noise_neutral environment_noise_neg environment_space_unrelated environment_space_positive environment_space_neutral " \
     "environment_space_neg environment_cleaness_unrelated environment_cleaness_positive environment_cleaness_neutral environment_cleaness_neg dish_portion_unrelated dish_portion_positive dish_portion_neutral dish_portion_neg dish_taste_unrelated dish_taste_positive dish_taste_neutral dish_taste_neg dish_look_unrelated dish_look_positive dish_look_neutral dish_look_neg dish_recommendation_unrelated dish_recommendation_positive dish_recommendation_neutral dish_recommendation_neg others_overall_experience_unrelated others_overall_experience_positive others_overall_experience_neutral others_overall_experience_neg others_willing_to_consume_again_unrelated others_willing_to_consume_again_positive others_willing_to_consume_again_neutral others_willing_to_consume_again_neg"
+
 X = 'comment'
 MAX_LEN = 50
 EMBED_SIZE = 100
 
-TOKENIZER_NAME = 'model/tokenizer-0530.tk'
-MODEL_NAME = 'model/bank_classification_2018_0530.h5'
+TOKENIZER_NAME = 'model/tokenizer-0831.tk'
+MODEL_NAME = 'model/rating_classification_2018_0831.h5'
