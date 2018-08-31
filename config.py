@@ -1,7 +1,7 @@
 __root_path = '/home/itaas/AI-Lab'
 EMBEDDING_FILE = "{}/dianping_w2v_kv.vec".format(__root_path)
 TRAIN_PATH = "{}/rating_train.csv".format(__root_path)
-TEST_PATH = "{}/binarized_test_set.csv".format(__root_path)
+TEST_PATH = "{}/validation_binary.csv".format(__root_path)
 
 Y = "location_traffic_convenience_unrelated location_traffic_convenience_positive location_traffic_convenience_neutral location_traffic_convenience_neg location_distance_from_business_district_unrelated " \
     "location_distance_from_business_district_positive location_distance_from_business_district_neutral location_distance_from_business_district_neg " \
