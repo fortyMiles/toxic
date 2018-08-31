@@ -30,7 +30,7 @@ model = load_model(os.path.join(path, C.MODEL_NAME.format(path)))
 tokenizer = TokenizerSaver.load()
 tokenizer.oov_token = None
 
-test_path = None
+test_path = C.TEST_FILE
 test = pd.read_csv(test_path)
 
 X_test = test[C.X].fillna("fillna").values
