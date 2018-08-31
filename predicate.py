@@ -1,21 +1,6 @@
 from keras import backend as K
-import os
-from importlib import reload
-
-
-# def set_keras_backend(backend):
-#     if K.backend() != backend:
-#         os.environ['KERAS_BACKEND'] = backend
-#         reload(K)
-#         assert K.backend() == backend
-#
-#
-# set_keras_backend("theano")
-
-
 from keras.preprocessing import sequence
 from tools.pickle_tools import TokenizerSaver
-import jieba
 from keras.models import load_model
 import numpy  as np
 import conf.logger_config as log_conf
@@ -26,11 +11,12 @@ from tools.string_tools import filter_unimportant
 logger.info('keras backend is {}'.format(K.backend()))
 
 path = 'model'
-jieba.load_userdict('{}/dic.txt'.format(path))
+# jieba.load_userdict('{}/dic.txt'.format(path))
 
 model = load_model('{}/bank_classification.h5'.format(path))
 
-x = np.array([[0, 0, 0, 0, 0, 0, 0, 622, 27, 153, 1, 1, 1, 1, 1]])
+feature_size = 50
+x = np.array([[0]*feature_size])
 model.predict(x)
 
 
@@ -41,11 +27,11 @@ DENSITY, VALUE = 'density', 'value'
 
 
 def get_string_tokenizer(string):
-    string = filter_unimportant(string)
-    maxlen = 15
+    # string = filter_unimportant(string)
+    # maxlen = 15
     global tokenizer
     X_test = tokenizer.texts_to_sequences([string])
-    x_test = sequence.pad_sequences(X_test, maxlen=maxlen)
+    x_test = sequence.pad_sequences(X_test, maxlen=feature_size)
 
     return x_test
 
