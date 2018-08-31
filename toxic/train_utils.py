@@ -4,11 +4,11 @@ import config as C
 import numpy as np
 
 
-def _train_model(model, epoch, batch_size, train_x, train_y, val_x, val_y, evaluation='auc'):
+def _train_model(model, epoch, batch_size, train_x, train_y, val_x, val_y, evaluation='auc', early_stop=5):
     if evaluation == 'acc':
         hist = model.fit(train_x, train_y, batch_size=batch_size, epochs=epoch, validation_data=(val_x, val_y),
                          callbacks=[
-                             EarlyStopping(patience=3),
+                             EarlyStopping(patience=early_stop),
                          ])
         best_score = hist.history['val_acc'][-1]
     elif evaluation == 'auc':
@@ -36,8 +36,6 @@ def _train_model(model, epoch, batch_size, train_x, train_y, val_x, val_y, evalu
 
             print("Epoch {0} score {1} best_score {2}".format(current_epoch, total_score, best_score))
 
-            early_stop = 3
-
             if total_score > best_score:
                 best_score = total_score
                 best_weights = model.get_weights()
@@ -51,7 +49,7 @@ def _train_model(model, epoch, batch_size, train_x, train_y, val_x, val_y, evalu
     return model, best_score
 
 
-def train_folds(X, y, epoch, fold_count, batch_size, get_model_func, evaluation='auc'):
+def train_folds(X, y, epoch, fold_count, batch_size, get_model_func, evaluation='auc', early_stop=5):
     # skf = StratifiedKFold(n_splits=fold_count, shuffle=False)
     # skf = StratifiedKFold(y, n_folds=fold_count, shuffle=False)
 
@@ -69,7 +67,8 @@ def train_folds(X, y, epoch, fold_count, batch_size, get_model_func, evaluation=
         train_y = y[:split_index]
         val_x = X[split_index:]
         val_y = y[split_index:]
-        model, score = _train_model(model, epoch, batch_size, train_x, train_y, val_x, val_y, evaluation=evaluation)
+        model, score = _train_model(model, epoch, batch_size, train_x, train_y, val_x, val_y, evaluation=evaluation,
+                                    early_stop=early_stop)
         models.append(model)
         scores.append(score)
     else:
@@ -91,7 +90,8 @@ def train_folds(X, y, epoch, fold_count, batch_size, get_model_func, evaluation=
             print('Running fold {}/{}'.format(i+1, fold_count))
             model = get_model_func()
 
-            model, score = _train_model(model, epoch, batch_size, train_x, train_y, val_x, val_y, evaluation=evaluation)
+            model, score = _train_model(model, epoch, batch_size, train_x, train_y, val_x, val_y, evaluation=evaluation,
+                                        early_stop=early_stop)
 
             models.append(model)
             scores.append(score)
