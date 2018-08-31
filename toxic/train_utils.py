@@ -6,7 +6,7 @@ from sklearn.metrics import f1_score
 
 
 def _train_model(model, epoch, batch_size, train_x, train_y, val_x, val_y, evaluation='auc', early_stop=5):
-    if evaluation == 'acc':
+    if evaluation == 'acc' or 'recall':
         hist = model.fit(train_x, train_y, batch_size=batch_size, epochs=epoch, validation_data=(val_x, val_y),
                          callbacks=[
                              EarlyStopping(patience=early_stop),
