@@ -18,21 +18,36 @@ import config as C
 import os
 import time
 
-model = load_model(C.MODEL_NAME)
 
-tokenizer = TokenizerSaver.load(C.TOKENIZER_NAME)
-tokenizer.oov_token = None
+def test_model(model_path=None, token_name=None, test_path=None, max_len=None, save=True):
+    model_path = model_path or C.MODEL_NAME
+    token_name = token_name or C.TOKENIZER_NAME
+    test_path = test_path or C.TEST_PATH
+    max_len = max_len or C.MAX_LEN
 
-test_path = C.TEST_PATH
-test = pd.read_csv(test_path)
+    model = load_model(model_path)
 
-X_test = test[C.X].fillna("fillna").values
+    tokenizer = TokenizerSaver.load(token_name)
+    tokenizer.oov_token = None
 
-X_test = tokenizer.texts_to_sequences(X_test)
-x_test = sequence.pad_sequences(X_test, maxlen=C.MAX_LEN)
-y_pred = model.predict(x_test, batch_size=1024)
-test[C.Y] = y_pred
+    test = pd.read_csv(test_path)
 
-result_dir = 'result'
-test.to_csv(os.path.join(result_dir, 'result_{}.csv'.format(time.time())), index=False)
-print('predicate finished!')
+    X_test = test[C.X].fillna("fillna").values
+
+    X_test = tokenizer.texts_to_sequences(X_test)
+    x_test = sequence.pad_sequences(X_test, maxlen=max_len)
+    y_pred = model.predict(x_test, batch_size=1024)
+    test[C.Y] = y_pred
+
+    if save:
+        result_dir = 'result'
+        test.to_csv(os.path.join(result_dir, 'result_{}.csv'.format(time.time())), index=False)
+
+    print('predicate finished!')
+
+    return test
+
+
+if __name__ == '__main__':
+    test_model()
+
