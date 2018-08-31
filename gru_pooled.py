@@ -18,7 +18,7 @@ import string
 np.random.seed(42)
 warnings.filterwarnings('ignore')
 
-os.environ['CUDA_VISIBLE_DEVICES'] = ''
+os.environ['CUDA_VISIBLE_DEVICES'] = '0, 1'
 
 # os.environ['OMP_NUM_THREADS'] = '4'
 
@@ -103,7 +103,7 @@ def get_model():
     inp = Input(shape=(C.MAX_LEN,))
     x = Embedding(max_features, C.EMBED_SIZE, weights=[embedding_matrix])(inp)
     x = SpatialDropout1D(0.2)(x)
-    x = Bidirectional(GRU(80, return_sequences=True))(x)
+    x = Bidirectional(CuDNNGRU(80, return_sequences=True))(x)
     avg_pool = GlobalAveragePooling1D()(x)
     max_pool = GlobalMaxPooling1D()(x)
     conc = concatenate([avg_pool, max_pool])
