@@ -15,7 +15,7 @@ from sklearn.metrics import f1_score
 import numpy as np
 import pandas as pd
 import os
-from gru_model_test import test_model
+from comment_predicate import test_model
 from tools.convert_category import convert_continuos_to_2_categorical, change_n_categorical_to_n_binary_categorical
 
 validation_csv_fpath = os.path.join('data', 'validation_binary.csv')
