@@ -17,7 +17,7 @@ import pandas as pd
 import config as C
 import os
 import time
-from tools.convert_category import convert_continuos_to_2_categorical
+from tools.convert_category import convert_continuous_to_n_categorical
 
 
 def test_model(model=None, model_path=None, token_name=None, test_path=None, max_len=None, save=True):
@@ -43,7 +43,11 @@ def test_model(model=None, model_path=None, token_name=None, test_path=None, max
     y_pred = model.predict(x_test, batch_size=1024)
     test[C.Y] = y_pred
 
-    test = convert_continuos_to_2_categorical(test)
+    test = convert_continuous_to_n_categorical(test)
+
+    test['content'] = test['comment']
+    del test['comment']
+
     if save:
         result_dir = 'result'
         test.to_csv(os.path.join(result_dir, 'result_{}.csv'.format(time.time())), index=False)

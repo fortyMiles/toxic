@@ -16,7 +16,7 @@ import pandas as pd
 emotion_map = {-2: 'unrelated', 1: 'positive', 0: 'neutral', -1: 'neg'}
 
 
-def convert_continuos_to_2_categorical(continous_csv, x='comment'):
+def convert_continuous_to_n_categorical(continous_csv, x='comment'):
     columns = continous_csv.columns.tolist()
     assert x in columns, ' x not in columns'
 

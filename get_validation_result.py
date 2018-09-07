@@ -16,7 +16,7 @@ import numpy as np
 import pandas as pd
 import os
 from comment_predicate import test_model
-from tools.convert_category import convert_continuos_to_2_categorical, change_n_categorical_to_n_binary_categorical
+from tools.convert_category import convert_continuous_to_n_categorical, change_n_categorical_to_n_binary_categorical
 
 validation_csv_fpath = os.path.join('data', 'validation_binary.csv')
 validation_original = pd.read_csv(validation_csv_fpath)
@@ -32,7 +32,7 @@ def evalution(predicate_csv_content, true_csv_content, labeld_columns):
 
 def get_validation_set_f1_score(model=None):
     validation_predicate = change_n_categorical_to_n_binary_categorical(
-        convert_continuos_to_2_categorical(
+        convert_continuous_to_n_categorical(
             test_model(test_path=validation_csv_fpath)
         )
     )
