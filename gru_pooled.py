@@ -47,9 +47,10 @@ X_train = train[C.X].fillna(string.whitespace).values
 
 # predicate_fields =["toxic", "severe_toxic", "obscene", "threat", "insult", "identity_hate"]
 
+max_features = C.max_features
+
 y_train = train[PREDICATE_FIELDS].values
 
-max_features = 200000
 
 # X_test = test["comment_text"].fillna("fillna").values
 logging.info('begin tokenizer')

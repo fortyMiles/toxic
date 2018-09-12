@@ -15,6 +15,6 @@ Y = "location_traffic_convenience_unrelated location_traffic_convenience_positiv
 X = 'comment'
 MAX_LEN = 200
 EMBED_SIZE = 100
-
+max_features = 200000
 TOKENIZER_NAME = 'model/tokenizer-0831-2.tk'
 MODEL_NAME = 'model/rating_classification_2018_0831-2.h5'

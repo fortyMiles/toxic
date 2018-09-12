@@ -18,6 +18,7 @@ import config as C
 import os
 import time
 from tools.convert_category import convert_continuous_to_n_categorical
+from tools.format_result_csv import format_csv_result
 
 
 def test_model(model=None, model_path=None, token_name=None, test_path=None, max_len=None, save=True):
@@ -50,6 +51,7 @@ def test_model(model=None, model_path=None, token_name=None, test_path=None, max
 
     if save:
         result_dir = 'result'
+        test = format_csv_result(test)
         test.to_csv(os.path.join(result_dir, 'result_{}.csv'.format(time.time())), index=False)
 
     print('predicate finished!')
