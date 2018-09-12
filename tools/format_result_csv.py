@@ -19,7 +19,7 @@ service_wait_time
 service_waiters_attitude
 service_parking_convenience	
 service_serving_speed
-environment_noise
+price_level
 price_cost_effective
 price_discount
 environment_decoration
